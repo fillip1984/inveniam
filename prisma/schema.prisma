@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
     previewFeatures = ["jsonProtocol"]
 }
 
@@ -56,6 +56,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    boards        Board[]
 }
 
 model VerificationToken {
@@ -64,4 +65,110 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Board {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+
+    name        String
+    description String
+
+    buckets Bucket[]
+}
+
+model Bucket {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    position  Int //@unique //// TODO: https://stackoverflow.com/questions/75882073/prisma-update-two-items-switch-around-unique-constraint-on-index
+
+    tasks   Task[]
+    board   Board?  @relation(fields: [boardId], references: [id])
+    boardId String?
+}
+
+model Task {
+    id          String    @id @default(cuid())
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    text        String
+    description String?
+    position    Int
+    status      String    @default("not_started") //switch to enum after migrating to something other than SQLite
+    priority    String? //switch to enum after migrating to something other than SQLite
+    startDate   DateTime?
+    dueDate     DateTime?
+
+    bucket   Bucket @relation(fields: [bucketId], references: [id])
+    bucketId String
+
+    tags TaskTags[]
+
+    comments Comment[]
+
+    checkListItems CheckListItem[]
+
+    attachments Attachment[]
+
+    // TODO: https://stackoverflow.com/questions/75882073/prisma-update-two-items-switch-around-unique-constraint-on-index
+    // @@unique([bucketId, position])
+}
+
+model TaskTags {
+    task       Task     @relation(fields: [taskId], references: [id])
+    taskId     String
+    tag        Tag      @relation(fields: [tagId], references: [id])
+    tagId      String
+    assignedAt DateTime @default(now())
+
+    @@id([taskId, tagId])
+}
+
+model Tag {
+    id          String   @id @default(cuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    name        String
+    description String?
+
+    tags TaskTags[]
+}
+
+model Comment {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    text      String
+    posted    DateTime
+
+    task   Task   @relation(fields: [taskId], references: [id])
+    taskId String
+}
+
+model CheckListItem {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    text      String
+    complete  Boolean  @default(false)
+
+    task   Task   @relation(fields: [taskId], references: [id])
+    taskId String
+}
+
+model Attachment {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    text      String
+    added     DateTime
+    location  String
+
+    task   Task   @relation(fields: [taskId], references: [id])
+    taskId String
 }
