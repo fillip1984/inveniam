@@ -24,13 +24,13 @@ const BoardCard = ({ board }: { board: BoardSummary }) => {
   const handleEditBoard = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    void router.push(`/boards/${board.id}/edit`);
+    void router.push(`/boards/${board.id}`);
   };
 
   return (
     <Link
       href={`/boards/${board.id}`}
-      className="flex min-h-[300px] min-w-[300px] flex-col rounded-lg bg-slate-300 p-2 transition duration-300 ease-in-out hover:bg-slate-300/90">
+      className="flex min-h-[300px] min-w-[300px] flex-col rounded-lg bg-primary p-2 transition duration-300 ease-in-out hover:bg-primary/90">
       <div className="flex-1">
         <h3>{board.name}</h3>
         <p>{board.description}</p>
@@ -38,12 +38,12 @@ const BoardCard = ({ board }: { board: BoardSummary }) => {
       <div className="flex justify-end gap-2">
         <button
           onClick={handleDelete}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-red-400 text-white">
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-danger text-white">
           <FaTrash />
         </button>
         <button
           onClick={handleEditBoard}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-400 text-white">
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-white">
           <FaPencilAlt />
         </button>
       </div>

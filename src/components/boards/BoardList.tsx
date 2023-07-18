@@ -1,9 +1,21 @@
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { api } from "~/utils/api";
 import BoardCard from "./BoardCard";
+import { useRouter } from "next/router";
 
 const BoardList = () => {
   const { data: boards } = api.boards.readAll.useQuery();
+
+  const handleSignOut = () => {
+    const router = useRouter();
+
+    signOut({ redirect: false })
+      .then(() => {
+        void router.push("/");
+      })
+      .catch(() => console.error("failed to log out"));
+  };
 
   return (
     <>
@@ -17,6 +29,7 @@ const BoardList = () => {
           </div>
         </Link>
       </div>
+      <signOut />
     </>
   );
 };

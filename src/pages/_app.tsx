@@ -3,6 +3,7 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
+import Nav from "~/components/nav/Nav";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -10,7 +11,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <Nav />
+      <main className="mt-16 min-h-screen bg-neutral-600 text-white">
+        <Component {...pageProps} />
+      </main>
     </SessionProvider>
   );
 };
