@@ -197,62 +197,66 @@ export const BoardRouter = createTRPCRouter({
       return result;
     }),
   sendReport: protectedProcedure.mutation(async ({ ctx }) => {
-    console.log("sending email");
+    try {
+      console.log("sending email");
 
-    // const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses"); // CommonJS import
-    const client = new SESClient({
-      region: "us-east-1",
-    });
-    const input = {
-      // SendEmailRequest
-      Source: "veniam@illizen.com", // required
-      Destination: {
-        // Destination
-        ToAddresses: [
-          // AddressList
-          "fillip1984@gmail.com",
-        ],
-        // CcAddresses: ["STRING_VALUE"],
-        // BccAddresses: ["STRING_VALUE"],
-      },
-      Message: {
-        // Message
-        Subject: {
-          // Content
-          Data: "STRING_VALUE", // required
-          // Charset: "STRING_VALUE",
+      // const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses"); // CommonJS import
+      const client = new SESClient({
+        region: "us-east-1",
+      });
+      const input = {
+        // SendEmailRequest
+        Source: "veniam@illizen.com", // required
+        Destination: {
+          // Destination
+          ToAddresses: [
+            // AddressList
+            "fillip1984@gmail.com",
+          ],
+          // CcAddresses: ["STRING_VALUE"],
+          // BccAddresses: ["STRING_VALUE"],
         },
-        Body: {
-          // Body
-          Text: {
+        Message: {
+          // Message
+          Subject: {
+            // Content
             Data: "STRING_VALUE", // required
             // Charset: "STRING_VALUE",
           },
-          // Html: {
-          // Data: "STRING_VALUE", // required
-          // Charset: "STRING_VALUE",
-          // },
+          Body: {
+            // Body
+            Text: {
+              Data: "STRING_VALUE", // required
+              // Charset: "STRING_VALUE",
+            },
+            // Html: {
+            // Data: "STRING_VALUE", // required
+            // Charset: "STRING_VALUE",
+            // },
+          },
         },
-      },
-      // ReplyToAddresses: ["STRING_VALUE"],
-      // ReturnPath: "STRING_VALUE",
-      // SourceArn: "STRING_VALUE",
-      // ReturnPathArn: "STRING_VALUE",
-      // Tags: [
-      // MessageTagList
-      // {
-      // MessageTag
-      // Name: "STRING_VALUE", // required
-      // Value: "STRING_VALUE", // required
-      // },
-      // ],
-      // ConfigurationSetName: "STRING_VALUE",
-    };
-    const command = new SendEmailCommand(input);
-    const response = await client.send(command);
-    console.log("sent email?", response);
-    // { // SendEmailResponse
-    //   MessageId: "STRING_VALUE", // required
-    // };
+        // ReplyToAddresses: ["STRING_VALUE"],
+        // ReturnPath: "STRING_VALUE",
+        // SourceArn: "STRING_VALUE",
+        // ReturnPathArn: "STRING_VALUE",
+        // Tags: [
+        // MessageTagList
+        // {
+        // MessageTag
+        // Name: "STRING_VALUE", // required
+        // Value: "STRING_VALUE", // required
+        // },
+        // ],
+        // ConfigurationSetName: "STRING_VALUE",
+      };
+      const command = new SendEmailCommand(input);
+      const response = await client.send(command);
+      console.log("sent email?", response);
+      // { // SendEmailResponse
+      //   MessageId: "STRING_VALUE", // required
+      // };
+    } catch (e) {
+      console.error("sending email error", e);
+    }
   }),
 });
