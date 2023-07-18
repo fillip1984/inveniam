@@ -112,7 +112,7 @@ const NewTask = ({ bucket }: { bucket: BucketAndEverything }) => {
         className="relative my-1 flex w-full items-center justify-center">
         <label
           htmlFor="dropzone-file"
-          className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary bg-primary">
+          className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-accent bg-accent">
           <div className="flex flex-col items-center justify-center py-1">
             <p className="text-sm text-primary">
               <span className="font-semibold">Click to upload</span> or drag and

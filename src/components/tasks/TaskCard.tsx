@@ -55,7 +55,7 @@ const TaskCard = ({
             {task.tags.map((taskTag) => (
               <span
                 key={taskTag.tag.id}
-                className="rounded bg-primary p-1 text-xs">
+                className="rounded bg-accent2 p-1 text-xs">
                 {taskTag.tag.name}
               </span>
             ))}
@@ -82,7 +82,7 @@ const TaskCard = ({
             {task.dueDate && (
               <div
                 className={clsx(
-                  "flex items-center gap-1 rounded bg-primary px-1 text-xs",
+                  "flex items-center gap-1 rounded bg-accent2 px-1 text-xs",
                   {
                     "bg-danger": isAfter(
                       startOfDay(new Date()),
@@ -96,7 +96,7 @@ const TaskCard = ({
             )}
 
             {task.checkListItems.length > 0 && (
-              <div className="flex items-center gap-1 rounded bg-primary p-1 text-xs">
+              <div className="flex items-center gap-1 rounded bg-accent2 p-1 text-xs">
                 <FaList />(
                 {task.checkListItems.filter((item) => item.complete).length}/
                 {task.checkListItems.length})
@@ -104,14 +104,14 @@ const TaskCard = ({
             )}
 
             {task.comments.length > 0 && (
-              <div className="flex items-center gap-1 rounded bg-primary p-1 text-xs">
+              <div className="flex items-center gap-1 rounded bg-accent2 p-1 text-xs">
                 <BsChatSquareTextFill />
                 {task.comments.length}
               </div>
             )}
 
             {task.attachments.length > 0 && (
-              <div className="flex items-center gap-1 rounded bg-primary p-1 text-xs">
+              <div className="flex items-center gap-1 rounded bg-accent2 p-1 text-xs">
                 <FaPaperclip />
                 {task.attachments.length}
               </div>

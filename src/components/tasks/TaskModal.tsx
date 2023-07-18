@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import clsx from "clsx";
 import { format } from "date-fns";
 import { useEffect } from "react";
 import {
@@ -16,10 +17,10 @@ import {
   FaEllipsisV,
   FaFlag,
   FaList,
-  FaPaperclip,
   FaTag,
 } from "react-icons/fa";
 import { TbCircleHalfVertical } from "react-icons/tb";
+import TextareaAutosize from "react-textarea-autosize";
 import { api } from "~/utils/api";
 import {
   PriorityOptions,
@@ -27,11 +28,9 @@ import {
   taskFormSchema,
   type TaskFormSchemaType,
 } from "~/utils/types";
-import AttachmentListView from "./AttachmentListView";
 import CheckListView from "./CheckListView";
 import CommentListView from "./CommentListView";
 import TagSelector from "./TagSelector";
-import clsx from "clsx";
 
 const TaskModal = ({
   isOpen,
@@ -84,12 +83,12 @@ const TaskModal = ({
   } = useFieldArray({ control, name: "comments" });
   const commentsState = useWatch({ control, name: "comments" });
 
-  const {
-    append: appendAttachment,
-    remove: removeAttachment,
-    fields: attachments,
-  } = useFieldArray({ control, name: "attachments" });
-  const attachmentState = useWatch({ control, name: "attachments" });
+  // const {
+  //   append: appendAttachment,
+  //   remove: removeAttachment,
+  //   fields: attachments,
+  // } = useFieldArray({ control, name: "attachments" });
+  // const attachmentState = useWatch({ control, name: "attachments" });
 
   useEffect(() => {
     if (task) {
@@ -206,10 +205,12 @@ const TaskModal = ({
                   className="flex w-8 justify-center">
                   <CiMemoPad className="text-2xl text-white" />
                 </label>
-                <textarea
+                <TextareaAutosize
+                  minRows={3}
                   {...register("description")}
                   id="description"
-                  rows={8}></textarea>
+                  rows={8}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <label
