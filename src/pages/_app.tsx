@@ -12,7 +12,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <Nav />
-      <main className="mt-16 min-h-screen bg-neutral-600 text-white">
+      <main className="mt-16 min-h-screen bg-black text-white">
         <Component {...pageProps} />
       </main>
     </SessionProvider>

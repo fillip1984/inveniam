@@ -3,20 +3,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import {
-  FaFlagCheckered,
-  FaHourglassStart,
-  FaSignOutAlt,
-  FaSlidersH,
-} from "react-icons/fa";
+import { FaSignOutAlt, FaSlidersH } from "react-icons/fa";
+import { GiTrail } from "react-icons/gi";
 
 const Nav = () => {
   return (
-    <nav className="fixed left-0 right-0 top-0 z-[997] flex h-16 items-center justify-between bg-slate-600 px-4 py-2">
+    <nav className="fixed left-0 right-0 top-0 z-[997] flex h-16 items-center justify-between bg-black/90 px-4 py-2">
       <Link href="/">
         <h3 className="flex items-center gap-2 font-bold text-white">
-          <FaHourglassStart />
-          ex nihilo
+          <GiTrail />
+          inveniam
         </h3>
       </Link>
       <AvatarAndMenu />
@@ -47,11 +43,6 @@ const AvatarAndMenu = () => {
       icon: <FaSlidersH />,
       action: () => void router.push("/preferences"),
     },
-    {
-      label: "Outcomes",
-      icon: <FaFlagCheckered />,
-      action: () => void router.push("/outcomes"),
-    },
     { label: "Sign out", icon: <FaSignOutAlt />, action: handleSignOut },
   ];
 
@@ -72,7 +63,7 @@ const AvatarAndMenu = () => {
             />
             <div
               id="avatar-menu"
-              className={`bg- absolute right-0 top-16 z-[999] w-36 rounded bg-white/70 backdrop-blur transition duration-300 ease-in-out ${
+              className={`absolute right-0 top-16 z-[999] w-36 rounded bg-white/70 backdrop-blur transition duration-300 ease-in-out ${
                 avatarMenuOpen ? "" : "hidden"
               }`}>
               <div className="flex flex-col p-2">
@@ -81,7 +72,7 @@ const AvatarAndMenu = () => {
                     type="button"
                     key={menuItem.label}
                     onClick={menuItem.action}
-                    className="flex items-center gap-2 rounded p-2 text-slate-600 hover:bg-slate-400 hover:text-white">
+                    className="flex items-center gap-2 rounded p-2 hover:text-white">
                     {menuItem.icon}
                     {menuItem.label}
                   </button>

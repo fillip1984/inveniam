@@ -24,7 +24,7 @@ const BoardCard = ({ board }: { board: BoardSummary }) => {
   const handleEditBoard = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    void router.push(`/boards/${board.id}`);
+    void router.push(`/boards/${board.id}/details`);
   };
 
   return (
