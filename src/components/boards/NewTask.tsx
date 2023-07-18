@@ -1,4 +1,5 @@
 import MsgReader from "@kenjiuno/msgreader";
+import clsx from "clsx";
 import {
   useRef,
   useState,
@@ -100,7 +101,7 @@ const NewTask = ({ bucket }: { bucket: BucketAndEverything }) => {
         <button
           type="button"
           onClick={handleAddTask}
-          className="h-auto rounded-r bg-slate-600 px-4 text-xl text-slate-200"
+          className="h-auto rounded-r bg-accent px-4 text-xl text-white"
           disabled={!task}>
           +
         </button>
@@ -111,13 +112,13 @@ const NewTask = ({ bucket }: { bucket: BucketAndEverything }) => {
         className="relative my-1 flex w-full items-center justify-center">
         <label
           htmlFor="dropzone-file"
-          className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50">
+          className="flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-primary bg-primary">
           <div className="flex flex-col items-center justify-center py-1">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-primary">
               <span className="font-semibold">Click to upload</span> or drag and
               drop
             </p>
-            <p className="text-xs text-slate-500">MSG</p>
+            <p className="text-xs text-primary">MSG</p>
           </div>
           {/* Trick to getting file drag and drop to function (by function I 
               mean the browser doesn't try to load or ask if you want to 

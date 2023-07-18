@@ -87,11 +87,11 @@ const TagSelector = ({
         {taskTags.map((tag, index) => (
           <span
             key={tag.id}
-            className="flex items-center gap-1 rounded-lg bg-slate-200 px-2 py-1">
+            className="flex items-center gap-1 rounded-lg bg-primary px-2 py-1">
             {tag.tag.name}
             <button
               onClick={() => handleRemoveTag(index)}
-              className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 p-2 text-white">
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-danger p-2 text-white">
               X
             </button>
           </span>
@@ -115,7 +115,7 @@ const TagSelector = ({
             {availableTagsGivenSearch.map((available) => (
               <span
                 key={available.id}
-                className="cursor-pointer select-none p-1 hover:bg-slate-300"
+                className="cursor-pointer select-none p-1 hover:bg-primary"
                 onClick={() => handleAddTag(available.id)}>
                 {available.name}
               </span>
@@ -132,12 +132,12 @@ const TagSelector = ({
             <div className="flex gap-1">
               <button
                 onClick={handleCreateTag}
-                className="rounded bg-slate-400 px-4 py-2">
+                className="rounded bg-primary px-4 py-2">
                 Create
               </button>
               <button
                 onClick={() => setTagSearch("")}
-                className="rounded border border-slate-400 px-4 py-2 text-slate-400">
+                className="rounded border border-primary px-4 py-2 text-primary">
                 Cancel
               </button>
             </div>

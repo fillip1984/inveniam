@@ -62,8 +62,8 @@ const AttachmentListView = ({
         {attachments.map((attachment, index) => (
           <div
             key={attachment.id}
-            className="relative rounded border border-slate-400 px-2">
-            <span className="text-xs text-slate-400">
+            className="relative rounded border border-primary px-2">
+            <span className="text-xs text-primary">
               Attached: {format(attachment.added, yyyyMMddSpaceHH_MM_aka24hr)}
             </span>
             {!attachment.location && (
@@ -86,7 +86,7 @@ const AttachmentListView = ({
             <p>{attachment.text}</p>
             <button
               onClick={() => remove(index)}
-              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white">
+              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-danger text-white">
               X
             </button>
           </div>
@@ -104,7 +104,7 @@ const AttachmentListView = ({
       <button
         type="button"
         onClick={handleAttachment}
-        className="rounded bg-slate-400 px-4 py-2">
+        className="rounded bg-primary px-4 py-2">
         Attach
       </button>
     </div>

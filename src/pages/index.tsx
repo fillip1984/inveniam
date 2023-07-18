@@ -21,6 +21,7 @@ export default function Home() {
 }
 
 const SignedInView = () => {
+  // TODO: this can move to /boards view once we create a landing page or redirect from / to /boards
   return <BoardList />;
 };
 
@@ -38,8 +39,7 @@ const NotSignedInView = () => {
         <button
           type="button"
           onClick={() => void signIn("github")}
-          className="flex w-full items-center gap-4 rounded border-gray-300 bg-white p-3 font-medium text-black"
-        >
+          className="border-gray-300 flex w-full items-center gap-4 rounded bg-white p-3 font-medium text-black">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="images/github-mark.png"
@@ -54,8 +54,7 @@ const NotSignedInView = () => {
           onClick={() =>
             void signIn("google", { callbackUrl: "http://localhost:3000" })
           }
-          className="flex w-full items-center gap-4 rounded border-gray-300 bg-white p-3 font-medium text-black"
-        >
+          className="border-gray-300 flex w-full items-center gap-4 rounded bg-white p-3 font-medium text-black">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="images/google_G.png"

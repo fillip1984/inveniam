@@ -30,14 +30,14 @@ const CommentListView = ({
         {comments.map((comment, index) => (
           <div
             key={comment.id}
-            className="relative rounded border border-slate-400 px-2">
-            <span className="text-xs text-slate-400">
+            className="relative rounded border border-primary px-2">
+            <span className="text-xs text-white">
               Posted: {format(comment.posted, yyyyMMddSpaceHH_MM_aka24hr)}
             </span>
             <p>{comment.text}</p>
             <button
               onClick={() => remove(index)}
-              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white">
+              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-danger text-white">
               X
             </button>
           </div>
@@ -51,7 +51,7 @@ const CommentListView = ({
         <button
           type="button"
           onClick={handlePost}
-          className="rounded bg-slate-400 px-4 py-2">
+          className="rounded bg-accent px-4 py-2">
           Post
         </button>
       </div>

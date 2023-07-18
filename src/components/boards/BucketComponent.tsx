@@ -5,7 +5,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { type BucketAndEverything, type DraggableData } from "~/utils/types";
 import TaskCard from "../tasks/TaskCard";
@@ -59,6 +59,7 @@ const BucketComponent = ({
     removeBucket.mutate({ bucketId: bucket.id });
   };
 
+  // modal stuff
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [taskId, setTaskId] = useState("");
 
@@ -67,11 +68,19 @@ const BucketComponent = ({
     setShowTaskModal(true);
   };
 
+  useEffect(() => {
+    if (showTaskModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [showTaskModal]);
+
   return (
     <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
       <div
         className={clsx(
-          "max-h-[90vh] w-[350px] select-none overflow-y-auto rounded-lg border bg-slate-200 p-4 ",
+          "max-h-[88vh] w-[350px] select-none overflow-hidden overflow-y-scroll rounded-lg border bg-primary p-4 ",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-1 scale-105": isOverlay,
@@ -80,14 +89,15 @@ const BucketComponent = ({
         <div className="my-2 flex justify-between">
           <div className="flex items-center gap-2">
             <h5>{bucket.name}</h5>
-            <span className="text-slate-400">{bucket.tasks.length}</span>
+            <span className="text-primary">{bucket.tasks.length}</span>
           </div>
           <button
             onClick={handleDeleteBucket}
-            className="rounded bg-slate-500 px-2 text-red-800">
+            className="text rounded-full bg-danger px-2 text-black">
             X
           </button>
         </div>
+
         <NewTask bucket={bucket} />
         <div className="mb-8 flex flex-col gap-2">
           <SortableContext
@@ -108,7 +118,7 @@ const BucketComponent = ({
 
       <TaskModal
         isOpen={showTaskModal}
-        onClose={() => setShowTaskModal(false)}
+        close={() => setShowTaskModal(false)}
         taskId={taskId}
       />
     </div>

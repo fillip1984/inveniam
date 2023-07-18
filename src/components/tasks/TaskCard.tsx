@@ -44,7 +44,7 @@ const TaskCard = ({
           handleTaskSelected ? handleTaskSelected(task.id) : null
         }
         className={clsx(
-          "cursor-pointer select-none rounded bg-slate-400 p-2 text-white",
+          "cursor-pointer select-none rounded border border-white bg-primary p-2 text-white",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-3 scale-105": isOverlay,
@@ -55,7 +55,7 @@ const TaskCard = ({
             {task.tags.map((taskTag) => (
               <span
                 key={taskTag.tag.id}
-                className="rounded bg-slate-500 p-1 text-xs">
+                className="rounded bg-primary p-1 text-xs">
                 {taskTag.tag.name}
               </span>
             ))}
@@ -82,9 +82,9 @@ const TaskCard = ({
             {task.dueDate && (
               <div
                 className={clsx(
-                  "flex items-center gap-1 rounded bg-slate-500 px-1 text-xs",
+                  "flex items-center gap-1 rounded bg-primary px-1 text-xs",
                   {
-                    "bg-red-500": isAfter(
+                    "bg-danger": isAfter(
                       startOfDay(new Date()),
                       startOfDay(task.dueDate)
                     ),
@@ -96,7 +96,7 @@ const TaskCard = ({
             )}
 
             {task.checkListItems.length > 0 && (
-              <div className="flex items-center gap-1 rounded bg-slate-500 p-1 text-xs">
+              <div className="flex items-center gap-1 rounded bg-primary p-1 text-xs">
                 <FaList />(
                 {task.checkListItems.filter((item) => item.complete).length}/
                 {task.checkListItems.length})
@@ -104,14 +104,14 @@ const TaskCard = ({
             )}
 
             {task.comments.length > 0 && (
-              <div className="flex items-center gap-1 rounded bg-slate-500 p-1 text-xs">
+              <div className="flex items-center gap-1 rounded bg-primary p-1 text-xs">
                 <BsChatSquareTextFill />
                 {task.comments.length}
               </div>
             )}
 
             {task.attachments.length > 0 && (
-              <div className="flex items-center gap-1 rounded bg-slate-500 p-1 text-xs">
+              <div className="flex items-center gap-1 rounded bg-primary p-1 text-xs">
                 <FaPaperclip />
                 {task.attachments.length}
               </div>

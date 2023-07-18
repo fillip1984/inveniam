@@ -56,7 +56,7 @@ const NewBucket = ({ board }: { board: BoardAndEverything }) => {
         <button
           type="button"
           onClick={handleAddBucket}
-          className="h-auto rounded-r bg-slate-800 px-4 py-2 text-xl text-slate-200"
+          className="h-auto rounded-r bg-primary px-4 py-2 text-xl text-white"
           disabled={!bucketName}>
           Add
         </button>

@@ -1,4 +1,3 @@
-import { Dialog } from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useEffect } from "react";
@@ -32,14 +31,15 @@ import AttachmentListView from "./AttachmentListView";
 import CheckListView from "./CheckListView";
 import CommentListView from "./CommentListView";
 import TagSelector from "./TagSelector";
+import clsx from "clsx";
 
 const TaskModal = ({
   isOpen,
-  onClose,
+  close,
   taskId,
 }: {
   isOpen: boolean;
-  onClose: () => void;
+  close: () => void;
   taskId: string;
 }) => {
   const { data: task } = api.tasks.readOne.useQuery(
@@ -118,7 +118,7 @@ const TaskModal = ({
   const { mutate: updateTask } = api.tasks.update.useMutation({
     onSuccess: () => {
       void utils.boards.invalidate();
-      onClose();
+      close();
     },
   });
 
@@ -129,7 +129,7 @@ const TaskModal = ({
   const { mutate: deleteTask } = api.tasks.delete.useMutation({
     onSuccess: () => {
       void utils.boards.invalidate();
-      onClose();
+      close();
     },
   });
   const handleDelete = () => {
@@ -139,50 +139,60 @@ const TaskModal = ({
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+    <div
+      className={clsx("relative", {
+        "hidden opacity-0": !isOpen,
+        "visible opacity-100": isOpen,
+      })}>
       {/* The backdrop, rendered as a fixed sibling to the panel container */}
-      <div className="fixed inset-0 bg-black/30 backdrop-blur" />
+      <div
+        onClick={close}
+        className="fixed inset-0 z-[998] bg-black/30 backdrop-blur"
+      />
 
-      <div className="fixed inset-0 mx-auto my-2 w-full max-w-[650px] overflow-y-auto">
-        <Dialog.Panel className="w-full rounded bg-slate-300 p-2 pb-24">
+      <div className="fixed inset-4 z-[999] mx-auto w-full max-w-[650px] overflow-hidden">
+        <div className="h-full rounded bg-primary">
           <div
             id="modal-header"
-            className="flex items-center justify-between p-2">
+            className="flex items-center justify-between p-4">
             <button
               type="button"
-              onClick={onClose}
-              className="flex items-center justify-center rounded-full bg-slate-400/20 p-2 text-2xl">
+              onClick={close}
+              className="flex items-center justify-center rounded-full bg-primary/20 p-2 text-2xl">
               <FaChevronLeft />
             </button>
             <div className="flex items-center justify-center gap-2">
               <button
                 type="submit"
                 form="taskForm"
-                className="rounded border bg-slate-700 px-4 py-2 text-white">
+                className="rounded border bg-primary px-4 py-2 text-white">
                 Save
               </button>
               <button
                 type="button"
-                onClick={onClose}
-                className="rounded border border-slate-700 px-4 py-2 text-slate-700">
+                onClick={close}
+                className="rounded border border-primary px-4 py-2 text-primary">
                 Close
               </button>
               <button
                 type="button"
                 onClick={handleDelete}
-                className="rounded border bg-red-800 px-4 py-2 text-white">
+                className="rounded border bg-danger px-4 py-2 text-white">
                 Delete
               </button>
             </div>
             <button
               type="button"
-              className="flex items-center justify-center rounded-full bg-slate-400/20 p-2 text-2xl">
+              className="flex items-center justify-center rounded-full bg-primary/20 p-2 text-2xl">
               <FaEllipsisV />
             </button>
           </div>
           <hr className="my-2" />
-          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-          <form onSubmit={handleSubmit(onSubmit)} id="taskForm">
+          <form
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            onSubmit={handleSubmit(onSubmit)}
+            id="taskForm"
+            className="h-full overflow-y-scroll p-2 pb-44">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
                 <span className="w-8 text-center">
@@ -194,7 +204,7 @@ const TaskModal = ({
                 <label
                   htmlFor="description"
                   className="flex w-8 justify-center">
-                  <CiMemoPad className="text-2xl text-stone-600" />
+                  <CiMemoPad className="text-2xl text-white" />
                 </label>
                 <textarea
                   {...register("description")}
@@ -205,7 +215,7 @@ const TaskModal = ({
                 <label
                   htmlFor="tags"
                   className="flex w-36 items-center gap-2 pl-2">
-                  <FaTag className="text-2xl text-stone-600" />
+                  <FaTag className="text-2xl text-white" />
                   <span>Tags</span>
                 </label>
                 <TagSelector
@@ -218,7 +228,7 @@ const TaskModal = ({
                 <label
                   htmlFor="bucket"
                   className="flex w-36 items-center gap-2 pl-2">
-                  <FaBitbucket className="text-2xl text-stone-600" />
+                  <FaBitbucket className="text-2xl text-white" />
                   <span>Bucket</span>
                 </label>
                 <select id="bucket" {...register("bucketId")}>
@@ -234,7 +244,7 @@ const TaskModal = ({
                 <label
                   htmlFor="status"
                   className="flex w-36 items-center gap-2 pl-2">
-                  <TbCircleHalfVertical className="text-2xl text-stone-600" />
+                  <TbCircleHalfVertical className="text-2xl text-white" />
                   <span>Status</span>
                 </label>
                 <select id="status" {...register("status")}>
@@ -249,7 +259,7 @@ const TaskModal = ({
                 <label
                   htmlFor="priority"
                   className="flex w-36 items-center gap-2 pl-2">
-                  <FaFlag className="text-2xl text-stone-600" />
+                  <FaFlag className="text-2xl text-white" />
                   <span>Priority</span>
                 </label>
                 <select id="priority" {...register("priority")}>
@@ -265,7 +275,7 @@ const TaskModal = ({
                 <label
                   htmlFor="startDate"
                   className="flex w-36 items-center gap-2 pl-2">
-                  <FaCalendarDay className="text-2xl text-stone-600" />
+                  <FaCalendarDay className="text-2xl text-white" />
                   <span>Start Date</span>
                 </label>
                 <input
@@ -281,12 +291,12 @@ const TaskModal = ({
               </div>
               <div
                 className={`flex flex-col  ${
-                  errors.dueDate ? "text-red-500" : "text-stone-600"
+                  errors.dueDate ? "text-danger" : "text-white"
                 }`}>
                 <div className="flex items-center gap-2">
                   <label
                     htmlFor="dueDate"
-                    className="pl-2text-stone-600 flex w-36 items-center gap-2">
+                    className="pl-2text-white flex w-36 items-center gap-2">
                     <FaCalendarDay className="text-2xl" />
                     <span>Due Date</span>
                   </label>
@@ -307,8 +317,8 @@ const TaskModal = ({
               </div>
               <div className="my-2 flex items-center gap-2">
                 <label className="flex items-center" />
-                <FaList className="text-2xl text-stone-600" /> Checklist
-                <span className="text-stone-500">
+                <FaList className="text-2xl text-white" /> Checklist
+                <span className="text-white">
                   ({checklistState?.filter((item) => item.complete).length}/
                   {checklistState?.length})
                 </span>
@@ -322,21 +332,19 @@ const TaskModal = ({
               />
               <div className="my-2 flex items-center gap-2">
                 <label className="flex items-center" />
-                <BsChatSquareTextFill className="text-2xl text-stone-600" />
+                <BsChatSquareTextFill className="text-2xl text-white" />
                 Comments
-                <span className="text-stone-500">
-                  {commentsState?.length ?? 0}
-                </span>
+                <span className="text-white">{commentsState?.length ?? 0}</span>
               </div>
               <CommentListView
                 comments={comments}
                 append={appendComment}
                 remove={removeComment}
               />
-              <div className="my-2 flex items-center gap-2">
+              {/* <div className="my-2 flex items-center gap-2">
                 <label className="flex items-center" />
-                <FaPaperclip className="text-2xl text-stone-600" /> Attachments
-                <span className="text-stone-500">
+                <FaPaperclip className="text-2xl text-white" /> Attachments
+                <span className="text-white">
                   {attachmentState?.length ?? 0}
                 </span>
               </div>
@@ -344,12 +352,12 @@ const TaskModal = ({
                 attachments={attachments}
                 append={appendAttachment}
                 remove={removeAttachment}
-              />
+              /> */}
             </div>
           </form>
-        </Dialog.Panel>
+        </div>
       </div>
-    </Dialog>
+    </div>
   );
 };
 

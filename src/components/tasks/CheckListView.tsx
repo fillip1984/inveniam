@@ -54,7 +54,7 @@ const CheckListView = ({
             <button
               type="button"
               onClick={() => remove(index)}
-              className="text-red-600">
+              className="rounded-full bg-danger p-2 text-white">
               <FaTrash />
             </button>
           </div>
@@ -88,7 +88,7 @@ const CheckListView = ({
         <button
           type="button"
           onClick={handleAddNewItem}
-          className="rounded-r bg-slate-400 px-6">
+          className="rounded-r bg-accent px-6">
           <FaPlus />
         </button>
       </div>
