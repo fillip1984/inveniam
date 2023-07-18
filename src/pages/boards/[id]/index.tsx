@@ -12,10 +12,8 @@ import {
   SortableContext,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
 import { useDebounce } from "usehooks-ts";
 import BucketComponent from "~/components/boards/BucketComponent";
 import NewBucket from "~/components/boards/NewBucket";

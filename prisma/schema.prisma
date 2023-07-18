@@ -2,12 +2,11 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["jsonProtocol"]
+    provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
@@ -15,10 +14,23 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+// Necessary for Next auth 
+// Grants access on invitation only circumstance. Whenever someone attempts to log in, 
+// we'll create an invitation initially set to false. We can then grant them access by 
+// flipping the enabled column to true. The name and email fields only help you identify
+// whether you want to grant access. The providerName tells you which provider they're using
+// the providerAccountId should uniquely identify them from the provider
+model Invitation {
+    id                String   @id @default(cuid())
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+    email             String
+    userId            String
+    providerName      String
+    providerAccountId String
+    enabled           Boolean  @default(false)
+
+    @@unique([providerName, providerAccountId])
 }
 
 // Necessary for Next auth

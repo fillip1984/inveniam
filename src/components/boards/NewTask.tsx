@@ -1,5 +1,4 @@
 import MsgReader from "@kenjiuno/msgreader";
-import clsx from "clsx";
 import {
   useRef,
   useState,

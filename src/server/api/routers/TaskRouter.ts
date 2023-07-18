@@ -2,13 +2,13 @@ import { parse } from "date-fns";
 import { z } from "zod";
 import { yyyyMMddHyphenated } from "~/utils/dateUtils";
 import { taskFormSchema, taskPositionUpdate } from "~/utils/types";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 import fs from "fs";
 
 const uploadsDir = process.cwd() + "/public/uploads";
 
 export const TaskRouter = createTRPCRouter({
-  create: publicProcedure
+  create: protectedProcedure
     .input(
       z.object({
         text: z.string(),
@@ -29,7 +29,7 @@ export const TaskRouter = createTRPCRouter({
 
       return result;
     }),
-  readOne: publicProcedure
+  readOne: protectedProcedure
     .input(
       z.object({
         taskId: z.string(),
@@ -60,7 +60,7 @@ export const TaskRouter = createTRPCRouter({
 
       return result;
     }),
-  update: publicProcedure
+  update: protectedProcedure
     .input(taskFormSchema)
     .mutation(async ({ ctx, input }) => {
       if (input.attachments[0]) {
@@ -210,7 +210,7 @@ export const TaskRouter = createTRPCRouter({
 
       return result;
     }),
-  updatePositions: publicProcedure
+  updatePositions: protectedProcedure
     .input(z.object({ tasks: z.array(taskPositionUpdate) }))
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.prisma.$transaction(async (tx) => {
@@ -229,7 +229,7 @@ export const TaskRouter = createTRPCRouter({
 
       return result;
     }),
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(
       z.object({
         taskId: z.string(),

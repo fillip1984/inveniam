@@ -1,9 +1,9 @@
 import { tagFormSchema } from "~/utils/types";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { z } from "zod";
 
 export const TagRouter = createTRPCRouter({
-  create: publicProcedure
+  create: protectedProcedure
     .input(tagFormSchema)
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.prisma.tag.create({
@@ -11,11 +11,11 @@ export const TagRouter = createTRPCRouter({
       });
       return result;
     }),
-  readAll: publicProcedure.query(async ({ ctx }) => {
+  readAll: protectedProcedure.query(async ({ ctx }) => {
     const result = await ctx.prisma.tag.findMany({ orderBy: { name: "asc" } });
     return result;
   }),
-  readOne: publicProcedure
+  readOne: protectedProcedure
     .input(z.object({ id: z.string().cuid() }))
     .query(async ({ ctx, input }) => {
       const tag = await ctx.prisma.tag.findUnique({
@@ -23,7 +23,7 @@ export const TagRouter = createTRPCRouter({
       });
       return tag;
     }),
-  update: publicProcedure
+  update: protectedProcedure
     .input(tagFormSchema)
     .mutation(async ({ ctx, input }) => {
       const result = ctx.prisma.tag.update({
@@ -37,7 +37,7 @@ export const TagRouter = createTRPCRouter({
       });
       return result;
     }),
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const result = ctx.prisma.tag.delete({

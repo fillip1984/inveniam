@@ -1,16 +1,12 @@
 import { z } from "zod";
 import { boardFormSchema, bucketPositionUpdate } from "~/utils/types";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { startOfDay } from "date-fns";
 
 export const BoardRouter = createTRPCRouter({
-  create: publicProcedure
+  create: protectedProcedure
     .input(boardFormSchema)
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.session) {
-        throw new Error("Unable to create boards without user in session");
-      }
-
       const result = await ctx.prisma.board.create({
         data: {
           name: input.name,
@@ -20,18 +16,21 @@ export const BoardRouter = createTRPCRouter({
       });
       return result;
     }),
-  readAll: publicProcedure.query(async ({ ctx }) => {
+  readAll: protectedProcedure.query(async ({ ctx }) => {
     const results = await ctx.prisma.board.findMany({
       select: {
         id: true,
         name: true,
         description: true,
       },
+      where: {
+        userId: ctx.session.user.id,
+      },
       orderBy: { name: "desc" },
     });
     return results;
   }),
-  readOne: publicProcedure
+  readOne: protectedProcedure
     .input(z.object({ id: z.string().cuid(), search: z.string().nullish() }))
     .query(async ({ ctx, input }) => {
       let due: Date | null = null;
@@ -42,7 +41,7 @@ export const BoardRouter = createTRPCRouter({
       }
 
       const board = await ctx.prisma.board.findUnique({
-        where: { id: input.id },
+        where: { id: input.id, userId: ctx.session.user.id },
         include: {
           buckets: {
             orderBy: {
@@ -118,7 +117,7 @@ export const BoardRouter = createTRPCRouter({
 
       return board;
     }),
-  update: publicProcedure
+  update: protectedProcedure
     .input(boardFormSchema)
     .mutation(async ({ ctx, input }) => {
       if (!input.id) {
@@ -135,7 +134,7 @@ export const BoardRouter = createTRPCRouter({
 
       return result;
     }),
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.board.delete({
@@ -144,7 +143,7 @@ export const BoardRouter = createTRPCRouter({
         },
       });
     }),
-  addBucket: publicProcedure
+  addBucket: protectedProcedure
     .input(
       z.object({
         bucketName: z.string().min(1),
@@ -163,7 +162,7 @@ export const BoardRouter = createTRPCRouter({
 
       return result;
     }),
-  updateBucketPositions: publicProcedure
+  updateBucketPositions: protectedProcedure
     .input(z.object({ buckets: z.array(bucketPositionUpdate) }))
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.prisma.$transaction(async (tx) => {
@@ -181,7 +180,7 @@ export const BoardRouter = createTRPCRouter({
 
       return result;
     }),
-  removeBucket: publicProcedure
+  removeBucket: protectedProcedure
     .input(
       z.object({
         bucketId: z.string(),
