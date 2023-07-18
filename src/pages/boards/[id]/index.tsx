@@ -12,8 +12,10 @@ import {
   SortableContext,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { FaArrowLeft } from "react-icons/fa";
 import { useDebounce } from "usehooks-ts";
 import BucketComponent from "~/components/boards/BucketComponent";
 import NewBucket from "~/components/boards/NewBucket";
@@ -247,7 +249,7 @@ const BoardView = () => {
 
   return (
     <>
-      {/* <div className="flex items-center justify-between gap-4 p-2">
+      <div className="flex items-center justify-between gap-4 p-2">
         <h4>{board?.name}</h4>
         <input
           type="search"
@@ -262,7 +264,7 @@ const BoardView = () => {
           <FaArrowLeft />
           Back to Boards
         </Link>
-      </div> */}
+      </div>
 
       {isLoading && <Loading />}
       {!isLoading && board && (
