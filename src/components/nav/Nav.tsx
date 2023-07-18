@@ -3,8 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { toast } from "react-hot-toast";
+import { BsFillSendFill } from "react-icons/bs";
 import { FaSignOutAlt, FaSlidersH } from "react-icons/fa";
 import { GiTrail } from "react-icons/gi";
+import { api } from "~/utils/api";
 
 const Nav = () => {
   return (
@@ -37,6 +40,17 @@ const AvatarAndMenu = () => {
       .catch(() => console.error("failed to log out"));
   };
 
+  const { mutate: sendEmail } = api.boards.sendReport.useMutation({
+    onSuccess: () => {
+      toast.success("Sent email maybe");
+    },
+  });
+
+  const handleSendEmail = () => {
+    console.log("testing email");
+    sendEmail();
+  };
+
   const menuItems = [
     {
       label: "Preferences",
@@ -44,6 +58,7 @@ const AvatarAndMenu = () => {
       action: () => void router.push("/preferences"),
     },
     { label: "Sign out", icon: <FaSignOutAlt />, action: handleSignOut },
+    { label: "Test email", icon: <BsFillSendFill />, action: handleSendEmail },
   ];
 
   return (
