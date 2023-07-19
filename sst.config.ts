@@ -1,4 +1,7 @@
-import { VerifySesDomain } from "@seeebiii/ses-verify-identities";
+import {
+  VerifySesDomain,
+  VerifySesEmailAddress,
+} from "@seeebiii/ses-verify-identities";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import { Tags } from "aws-cdk-lib/core";
@@ -29,8 +32,12 @@ export default {
         }
       );
 
-      const ses = new VerifySesDomain(stack, "SesDomainVerification", {
+      new VerifySesDomain(stack, "SesDomainVerification", {
         domainName: "illizen.com",
+      });
+
+      new VerifySesEmailAddress(stack, "SesEmailVerification", {
+        emailAddress: "fillip1984@gmail.com",
       });
 
       // TODO: Should switch to storing in aws Secrets but haven't spent the time figuring out how to get it back out for primsa. See: https://docs.sst.dev/config#overview
