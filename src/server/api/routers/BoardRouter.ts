@@ -206,7 +206,7 @@ export const BoardRouter = createTRPCRouter({
       });
       const input = {
         // SendEmailRequest
-        Source: "veniam@illizen.com", // required
+        Source: "inveniam@illizen.com", // required
         Destination: {
           // Destination
           ToAddresses: [
@@ -257,6 +257,7 @@ export const BoardRouter = createTRPCRouter({
       // };
     } catch (e) {
       console.error("sending email error", e);
+      return e;
     }
   }),
 });

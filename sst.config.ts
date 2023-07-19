@@ -1,9 +1,9 @@
+import { VerifySesDomain } from "@seeebiii/ses-verify-identities";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import { Tags } from "aws-cdk-lib/core";
 import { type SSTConfig } from "sst";
 import { NextjsSite } from "sst/constructs";
-import { VerifySesDomain } from "@seeebiii/ses-verify-identities";
 export default {
   config(_input) {
     return {
@@ -32,7 +32,6 @@ export default {
       const ses = new VerifySesDomain(stack, "SesDomainVerification", {
         domainName: "illizen.com",
       });
-      console.log("ses", ses);
 
       // TODO: Should switch to storing in aws Secrets but haven't spent the time figuring out how to get it back out for primsa. See: https://docs.sst.dev/config#overview
       const DATABASE_URL = process.env.DATABASE_URL;
