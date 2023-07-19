@@ -1,12 +1,12 @@
 import { Button } from "@react-email/button";
 import { Html } from "@react-email/html";
-import * as React from "react";
+import { render } from "@react-email/render";
 
 interface EmailProps {
   url: string;
 }
 
-export const Email: React.FC<Readonly<EmailProps>> = ({ url }) => {
+const Email: React.FC<Readonly<EmailProps>> = ({ url }) => {
   return (
     <Html>
       <Button
@@ -18,4 +18,8 @@ export const Email: React.FC<Readonly<EmailProps>> = ({ url }) => {
       </Button>
     </Html>
   );
+};
+
+export const renderClickMeEmail = ({ url }: EmailProps) => {
+  return render(<Email url={url} />);
 };
