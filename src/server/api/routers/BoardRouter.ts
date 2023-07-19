@@ -229,7 +229,7 @@ export const BoardRouter = createTRPCRouter({
             // Charset: "STRING_VALUE",
             // },
             Html: {
-              Data: email.toString(), // required
+              Data: email, // required
               // Charset: "STRING_VALUE",
             },
           },
