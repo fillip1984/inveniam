@@ -1,6 +1,7 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"; // ES Modules import
 import { startOfDay } from "date-fns";
 import { z } from "zod";
+import { Email } from "~/email/email";
 import { boardFormSchema, bucketPositionUpdate } from "~/utils/types";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -200,39 +201,34 @@ export const BoardRouter = createTRPCRouter({
     try {
       console.log("sending email");
 
-      // const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses"); // CommonJS import
+      const email = Email({ url: "https://inveniam.illizen.com" });
+      console.log("email", email);
+
       const client = new SESClient({
         region: "us-east-1",
       });
       const input = {
-        // SendEmailRequest
         Source: "inveniam@illizen.com", // required
         Destination: {
-          // Destination
-          ToAddresses: [
-            // AddressList
-            "fillip1984@gmail.com",
-          ],
+          ToAddresses: ["fillip1984@gmail.com"],
           // CcAddresses: ["STRING_VALUE"],
           // BccAddresses: ["STRING_VALUE"],
         },
         Message: {
-          // Message
           Subject: {
-            // Content
-            Data: "STRING_VALUE", // required
+            Data: "Learning react-email", // required
             // Charset: "STRING_VALUE",
           },
           Body: {
             // Body
-            Text: {
-              Data: "STRING_VALUE", // required
-              // Charset: "STRING_VALUE",
-            },
-            // Html: {
+            // Text: {
             // Data: "STRING_VALUE", // required
             // Charset: "STRING_VALUE",
             // },
+            Html: {
+              Data: email?.toString(), // required
+              // Charset: "STRING_VALUE",
+            },
           },
         },
         // ReplyToAddresses: ["STRING_VALUE"],
@@ -255,6 +251,7 @@ export const BoardRouter = createTRPCRouter({
       // { // SendEmailResponse
       //   MessageId: "STRING_VALUE", // required
       // };
+      return email?.toString();
     } catch (e) {
       console.error("sending email error", e);
       return e;

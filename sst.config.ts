@@ -32,6 +32,34 @@ export default {
         }
       );
 
+      /*
+       * To get emails a sendin' you will need to:
+       * 1) have a domain already registered and setup (easiest if its Route53)
+       * 2) add the following ses contructs from https://github.com/seeebiii/ses-verify-identities/tree/main
+       * 3) if you send the emails from your NextJs app, you'll need to add this permission to the lambda. 
+       *    To do that, you'll want to, go into IAM on aws console, click Roles (under Access management), 
+       *    search for the resource that's sending emails. Kknowing which resource to add the permission to can be tricky. 
+       *    If you're having trouble you can test sending emails from your application and search through the logs on aws (either by tailing or cloud watch). 
+       *    You're looking for someting like: AccessDenied: User `arn:aws:...' is not authorized to perform `ses:SendEmail' on resource `arn:aws:...:identity/email you verified.com'.
+       *    I create an inline policy on the resource once I find it:
+       *  {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Action": [
+                      "ses:SendEmail"
+                  ],
+                  "Resource": [
+                      "*"
+                  ]
+              }
+            ]
+          }
+       * 4) the emailAddress from sesEmailVerification will get an email with a link that will enable it to start receiving emails
+       * 5) Send more emails and now they should appear!
+       */
+
       new VerifySesDomain(stack, "SesDomainVerification", {
         domainName: "illizen.com",
       });
