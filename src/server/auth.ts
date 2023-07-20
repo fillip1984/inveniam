@@ -9,7 +9,6 @@ import {
 import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import { userAgent } from "next/server";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
