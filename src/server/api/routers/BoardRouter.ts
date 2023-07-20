@@ -1,7 +1,7 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"; // ES Modules import
 import { startOfDay } from "date-fns";
 import { z } from "zod";
-import { renderClickMeEmail, renderStatusEmail } from "~/email/EmailTemplates";
+import { renderStatusEmail } from "~/email/EmailTemplates";
 import { boardFormSchema, bucketPositionUpdate } from "~/utils/types";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
