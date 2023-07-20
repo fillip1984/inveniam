@@ -1,7 +1,7 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"; // ES Modules import
 import { startOfDay } from "date-fns";
 import { z } from "zod";
-import { renderClickMeEmail } from "~/email/EmailTemplates";
+import { renderClickMeEmail, renderStatusEmail } from "~/email/EmailTemplates";
 import { boardFormSchema, bucketPositionUpdate } from "~/utils/types";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -201,7 +201,8 @@ export const BoardRouter = createTRPCRouter({
     try {
       console.log("sending email");
 
-      const email = renderClickMeEmail({ url: "https://inveniam.illizen.com" });
+      // const email = renderClickMeEmail({ url: "https://inveniam.illizen.com" });
+      const email = renderStatusEmail();
       if (!email) {
         throw new Error("failed to render email content");
       }
@@ -249,12 +250,9 @@ export const BoardRouter = createTRPCRouter({
         // ConfigurationSetName: "STRING_VALUE",
       };
       const command = new SendEmailCommand(input);
-      const response = await client.send(command);
-      console.log("sent email?", response);
-      // { // SendEmailResponse
-      //   MessageId: "STRING_VALUE", // required
-      // };
-      return email;
+      await client.send(command);
+
+      return "sucess";
     } catch (e) {
       console.error("sending email error", e);
       return e;
