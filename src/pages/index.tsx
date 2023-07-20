@@ -1,5 +1,6 @@
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
+import { useState, type FormEvent } from "react";
 import BoardList from "~/components/boards/BoardList";
 
 export default function Home() {
@@ -8,8 +9,8 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>forder</title>
-        <meta name="description" content="productivity tool" />
+        <title>inveniam</title>
+        <meta name="description" content="Kanban productivity tool" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -26,8 +27,23 @@ const SignedInView = () => {
 };
 
 const NotSignedInView = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [result, setResult] = useState("");
+
+  const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const result = await signIn("credentials", {
+      username,
+      password,
+      redirect: false,
+    });
+    if (result?.error) {
+      setResult(result.error);
+    }
+  };
   return (
-    <div className="flex h-screen flex-col items-center pt-8">
+    <div className="mx-auto flex h-screen w-[350px] flex-col items-center pt-8">
       <div className="mb-8 flex items-center justify-center">
         <h2>inveniam</h2>
         {/* <FaHourglassStart className="h-24 w-24" /> */}
@@ -51,9 +67,7 @@ const NotSignedInView = () => {
 
         <button
           type="button"
-          onClick={() =>
-            void signIn("google", { callbackUrl: "http://localhost:3000" })
-          }
+          onClick={() => void signIn("google")}
           className="border-gray-300 flex w-full items-center gap-4 rounded bg-white p-3 font-medium text-black">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -63,6 +77,30 @@ const NotSignedInView = () => {
           />
           Sign in with google
         </button>
+        <h4>or</h4>
+        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+        <form onSubmit={handleSignIn}>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+          />
+          <button type="submit" className="w-full rounded bg-primary px-4 py-2">
+            Sign in
+          </button>
+          {result && (
+            <p className="my-2 bg-danger/30 px-4 py-2 text-center font-bold text-danger">
+              {result}
+            </p>
+          )}
+        </form>
       </div>
     </div>
   );

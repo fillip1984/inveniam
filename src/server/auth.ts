@@ -1,14 +1,15 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
-  type NextAuthOptions,
-  type DefaultSession,
   type Account,
+  type DefaultSession,
+  type NextAuthOptions,
   type Profile,
 } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
+import { userAgent } from "next/server";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
@@ -59,13 +60,18 @@ const isInvited = async ({
   account: Account | null;
   profile?: Profile | undefined;
 }) => {
-  if (!profile) {
-    console.error("isInvited was not passed a profile from Auth");
+  if (!account) {
+    console.error("isInvited was not passed an account from Auth");
     return false;
   }
 
-  if (!account) {
-    console.error("isInvited was not passed an account from Auth");
+  if (account.provider === "credentials") {
+    console.log("credentials were provided so they are already invited");
+    return true;
+  }
+
+  if (!profile) {
+    console.error("isInvited was not passed a profile from Auth");
     return false;
   }
 
@@ -137,6 +143,25 @@ const addInviteeForPossibleFutureAccess = async (
   return possibleFutureInvitee;
 };
 
+// const generateSession = ({
+//   session,
+//   token,
+//   user,
+// }: {
+//   session: Session;
+//   token: JWT;
+//   user: AdapterUser;
+// }) => {
+//   console.log("sessioning", session, user, token);
+//   return {
+//     ...session,
+//     user: {
+//       ...session.user,
+//       id: user.id,
+//     },
+//   };
+// };
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -145,15 +170,31 @@ const addInviteeForPossibleFutureAccess = async (
 export const authOptions: NextAuthOptions = {
   callbacks: {
     signIn: isInvited,
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session }) => {
+      console.log("session", session);
+      const freshUser = await prisma.user.findFirst({
+        where: {
+          email: session.user.email,
+        },
+      });
+      if (!freshUser) {
+        throw new Error("unable to find user by email");
+      }
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: freshUser.id,
+        },
+      };
+    },
+    // jwt: ({ token, user }) => {
+    //   console.log("token", token, user);
+    //   return token;
+    // },
   },
-  adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
+  // adapter: PrismaAdapter(prisma),
   providers: [
     GithubProvider({
       clientId: env.NEXTAUTH_GITHUB_CLIENT_ID,
@@ -162,6 +203,41 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: env.NEXTAUTH_GOOGLE_CLIENT_ID,
       clientSecret: env.NEXTAUTH_GOOGLE_CLIENT_SECRET,
+    }),
+    CredentialsProvider({
+      credentials: {
+        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        let user = null;
+        if (
+          credentials?.username === "fillip1984@gmail.com" &&
+          credentials.password === "Alea iacta est!1"
+        ) {
+          user = await prisma.user.findUnique({
+            where: {
+              email: "fillip1984@gmail.com",
+            },
+          });
+        }
+
+        if (user) {
+          // Any object returned will be saved in `user` property of the JWT
+          // const session = await prisma.session.create({
+          //   data: {
+          //     userId: user.id,
+          //     expires: new Date().toISOString(),
+          //     sessionToken: new Date().toISOString(),
+          //   },
+          // });
+          // console.log("returning", user);
+          return user;
+        } else {
+          // If you return null then an error will be displayed advising the user to check their details.
+          throw new Error("Credenails invalid");
+        }
+      },
     }),
     /**
      * ...add more providers here.
@@ -184,5 +260,6 @@ export const getServerAuthSession = (ctx: {
   req: GetServerSidePropsContext["req"];
   res: GetServerSidePropsContext["res"];
 }) => {
+  console.log("getting server session");
   return getServerSession(ctx.req, ctx.res, authOptions);
 };
