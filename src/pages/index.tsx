@@ -1,6 +1,6 @@
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
 import BoardList from "~/components/boards/BoardList";
 
 export default function Home() {
@@ -29,7 +29,7 @@ const SignedInView = () => {
 const NotSignedInView = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [result, setResult] = useState("");
+  const [error, setError] = useState("");
 
   const handleSignIn = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,9 +39,16 @@ const NotSignedInView = () => {
       redirect: false,
     });
     if (result?.error) {
-      setResult(result.error);
+      setError(result.error);
     }
   };
+
+  //resets error so that any errors we've received are cleared to give indication
+  // to end user that their efforts to rectify the issue are being considered
+  useEffect(() => {
+    setError("");
+  }, [username, password]);
+
   return (
     <div className="mx-auto flex h-screen w-[350px] flex-col items-center pt-8">
       <div className="mb-8 flex items-center justify-center">
@@ -95,9 +102,9 @@ const NotSignedInView = () => {
           <button type="submit" className="w-full rounded bg-primary px-4 py-2">
             Sign in
           </button>
-          {result && (
+          {error && (
             <p className="my-2 bg-danger/30 px-4 py-2 text-center font-bold text-danger">
-              {result}
+              {error}
             </p>
           )}
         </form>

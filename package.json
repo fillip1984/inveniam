@@ -29,6 +29,7 @@
     "@trpc/next": "^10.26.0",
     "@trpc/react-query": "^10.26.0",
     "@trpc/server": "^10.26.0",
+    "bcrypt": "^5.1.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@seeebiii/ses-verify-identities": "^4.2.3",
     "@tailwindcss/forms": "^0.5.4",
+    "@types/bcrypt": "^5.0.0",
     "@types/eslint": "^8.37.0",
     "@types/node": "^18.16.0",
     "@types/prettier": "^2.7.2",

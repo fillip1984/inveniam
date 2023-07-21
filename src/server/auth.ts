@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
@@ -205,36 +206,56 @@ export const authOptions: NextAuthOptions = {
     }),
     CredentialsProvider({
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" },
+        username: { label: "Username", type: "text", placeholder: "Username" },
+        password: {
+          label: "Password",
+          type: "password",
+          placeholder: "Password",
+        },
       },
       async authorize(credentials) {
-        let user = null;
-        if (
-          credentials?.username === "fillip1984@gmail.com" &&
-          credentials.password === "Alea iacta est!1"
-        ) {
-          user = await prisma.user.findUnique({
-            where: {
-              email: "fillip1984@gmail.com",
-            },
-          });
+        if (!credentials?.username) {
+          throw new Error("Username is required");
         }
 
-        if (user) {
-          // Any object returned will be saved in `user` property of the JWT
-          // const session = await prisma.session.create({
-          //   data: {
-          //     userId: user.id,
-          //     expires: new Date().toISOString(),
-          //     sessionToken: new Date().toISOString(),
-          //   },
-          // });
-          // console.log("returning", user);
-          return user;
+        if (!credentials?.password) {
+          throw new Error("Password is required");
+        }
+
+        // this code can be used to record the username and or password to the db otherwise we shouldn't be using username or passwords
+        // I intend to use google/github for authentication unless something prevents me from doing that. Then, I'll go through this broken exercise of putting username/password into db (encrypted of course)
+        // If you do want to support using the credentials provider you'll need to build out a screen and process to record username, password, etc...
+        // const salt = bcrypt.genSaltSync(10);
+        // const encryptedPassword = bcrypt.hashSync(credentials?.password, salt);
+        // console.log(
+        //   "clear text password (for confirmation purposes",
+        //   credentials.password,
+        //   "encryptedPassword",
+        //   encryptedPassword
+        // );
+
+        const potentialUser = await prisma.user.findFirst({
+          where: {
+            email: {
+              equals: credentials.username,
+              mode: "insensitive",
+            },
+          },
+        });
+
+        if (!potentialUser) {
+          throw new Error("Username or password is invalid");
+        }
+
+        if (!potentialUser.password) {
+          throw new Error("Username or password is invalid1");
+        }
+
+        if (bcrypt.compareSync(credentials.password, potentialUser.password)) {
+          return potentialUser;
         } else {
           // If you return null then an error will be displayed advising the user to check their details.
-          throw new Error("Credenails invalid");
+          throw new Error("Username or password is invalid");
         }
       },
     }),
