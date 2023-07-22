@@ -280,7 +280,7 @@ const BoardView = () => {
       {isLoading && <Loading />}
       {!isLoading && board && (
         <>
-          <div className="flex flex-nowrap gap-4 overflow-y-scroll p-4 pr-12">
+          <div className="flex flex-nowrap gap-4 overflow-y-auto p-4 pr-12">
             <DndContext
               sensors={[mouseSensor, touchSensor]}
               // TODO: not sure what the collision or measuring is doing, only reason I
