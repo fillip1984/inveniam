@@ -1,9 +1,10 @@
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
-import { api } from "~/utils/api";
-import "~/styles/globals.css";
+import { Toaster } from "react-hot-toast";
 import Nav from "~/components/nav/Nav";
+import "~/styles/globals.css";
+import { api } from "~/utils/api";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -12,9 +13,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <Nav />
-      <main className="h-screen bg-black pt-16 text-white">
+      <main className="mt-16 min-h-screen bg-black pb-48 text-white">
         <Component {...pageProps} />
       </main>
+      <Toaster />
     </SessionProvider>
   );
 };

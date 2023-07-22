@@ -1,180 +1,188 @@
 import {
   Body,
   Button,
+  Column,
   Container,
   Head,
-  Heading,
   Html,
-  Link,
+  Preview,
+  Row,
   Section,
+  Tailwind,
   Text,
 } from "@react-email/components";
 import { render } from "@react-email/render";
+import { format } from "date-fns";
+import { type StatusReportType } from "~/utils/types";
 
-interface EmailProps {
-  url: string;
-}
-
-const Email = ({ url }: EmailProps) => {
+export const StatusReportEmail = ({ status }: { status: StatusReportType }) => {
   return (
     <Html>
-      <Button
-        pX={20}
-        pY={12}
-        href={url}
-        style={{ background: "#000", color: "#fff" }}>
-        Click me
-      </Button>
+      <Head />
+      <Preview>
+        Overdue: {status.overdue.length.toString()}, Today:{" "}
+        {status.dueToday.length.toString()}
+      </Preview>
+      <Body>
+        <Tailwind
+          config={{
+            theme: {
+              extend: {
+                colors: {
+                  primary: "#6E7E85",
+                  secondary: "#E2E2E2",
+                  accent: "#B7CECE",
+                  accent2: "#BBBAC6",
+                  black: "#1C0F13",
+                  white: "#ffffff",
+                  danger: "#EB4C7C",
+                  warning: "#F0E3B2",
+                },
+              },
+            },
+          }}>
+          <Container className="mx-auto w-4/5">
+            <Section className="my-2 text-center text-2xl">
+              <Row>
+                <h2>{format(new Date(), "EEEE (M/dd)")}</h2>
+              </Row>
+              <Row>
+                <Button
+                  href="https://inveniam.illizen.com"
+                  className="rounded bg-black px-4 py-2 text-2xl text-white">
+                  Go to inveniam
+                </Button>
+              </Row>
+            </Section>
+
+            <Section className="my-8">
+              <Row>
+                <Column
+                  align="center"
+                  className="w-[100px] rounded-t-lg bg-danger/30 text-2xl">
+                  <Text className="text-xl">Overdue</Text>
+                </Column>
+                <Column
+                  align="center"
+                  className="w-[100px] rounded-t-lg bg-accent/30 text-2xl">
+                  <Text className="text-xl">Today</Text>
+                </Column>
+              </Row>
+              <Row>
+                <Column
+                  align="center"
+                  className="w-[100px] rounded-b-lg bg-danger/30">
+                  <Text className="text-6xl">{status.overdue.length}</Text>
+                </Column>
+                <Column
+                  align="center"
+                  className="w-[100px] rounded-b-lg bg-accent/30">
+                  <Text className="text-6xl">{status.dueToday.length}</Text>
+                </Column>
+              </Row>
+              <Row>
+                <Column
+                  align="center"
+                  className="w-[100px] rounded-t-lg bg-accent2/30 text-xl">
+                  <Text className="text-xl">This Week</Text>
+                </Column>
+                <Column
+                  align="center"
+                  className="w-[100px] rounded-t-lg bg-warning/30 text-xl">
+                  <Text className="text-xl">Completed</Text>
+                </Column>
+              </Row>
+              <Row>
+                <Column
+                  align="center"
+                  className="w-[100px] rounded-b-lg bg-accent2/30">
+                  <Text className="text-6xl">{status.dueThisWeek.length}</Text>
+                </Column>
+                <Column
+                  align="center"
+                  className="w-[100px] rounded-b-lg bg-warning/30">
+                  <Text className="text-6xl">
+                    {status.completedThisWeek.length}
+                  </Text>
+                </Column>
+              </Row>
+            </Section>
+
+            <Section className="my-2 rounded-xl bg-danger/30 px-1">
+              <Row>
+                <h3 className="mb-2 font-bold text-danger">Overdue</h3>
+                {status.overdue.length === 0 && (
+                  <p className="text-xs">Nothing overdue</p>
+                )}
+
+                {status.overdue.map((task) => (
+                  <div key={task.id}>
+                    <label>
+                      <input type="checkbox" className="mx-2 rounded-full" />
+                      {task.text}
+                    </label>
+                  </div>
+                ))}
+              </Row>
+            </Section>
+
+            <Section className="my-2 rounded-xl bg-accent/30 px-1">
+              <Row>
+                <h3 className="mb-2 font-bold text-accent">Today</h3>
+                {status.dueToday.length === 0 && (
+                  <p className="text-xs">Nothing due</p>
+                )}
+                {status.dueToday.map((task) => (
+                  <div key={task.id}>
+                    <label>
+                      <input type="checkbox" className="mx-2 rounded-full" />
+                      {task.text}
+                    </label>
+                  </div>
+                ))}
+              </Row>
+            </Section>
+
+            <Section className="my-2 rounded-xl bg-accent2/30 px-1">
+              <Row>
+                <h3 className="mb-2 font-bold text-accent2">This Week</h3>
+                {status.dueThisWeek.length === 0 && (
+                  <p className="text-xs">Nothing due</p>
+                )}
+                {status.dueThisWeek.map((task) => (
+                  <div key={task.id}>
+                    <label>
+                      <input type="checkbox" className="mx-2 rounded-full" />
+                      {task.text}
+                    </label>
+                  </div>
+                ))}
+              </Row>
+            </Section>
+
+            <Section className="my-2 rounded-xl bg-warning/30 px-1">
+              <Row>
+                <h3 className="mb-2 font-bold text-warning">Completed</h3>
+                {status.completedThisWeek.length === 0 && (
+                  <p className="text-xs">No tasks have been completed...yet!</p>
+                )}
+                {status.completedThisWeek.map((task) => (
+                  <div key={task.id}>
+                    <label>
+                      <input type="checkbox" className="mx-2 rounded-full" />
+                      {task.text}
+                    </label>
+                  </div>
+                ))}
+              </Row>
+            </Section>
+          </Container>
+        </Tailwind>
+      </Body>
     </Html>
   );
 };
 
-export const renderClickMeEmail = ({ url }: EmailProps) => {
-  return render(<Email url={url} />);
-};
-
-const StatusEmail = () => (
-  <Html>
-    <Head />
-    <Body
-      style={{
-        backgroundColor: "#ffffff",
-        fontFamily: "HelveticaNeue,Helvetica,Arial,sans-serif",
-      }}>
-      <Container
-        style={{
-          color: "#000",
-          display: "inline-block",
-          fontFamily: "HelveticaNeue-Bold",
-          fontSize: "32px",
-          fontWeight: 700,
-          letterSpacing: "6px",
-          lineHeight: "40px",
-          paddingBottom: "8px",
-          paddingTop: "8px",
-          margin: "0 auto",
-          width: "100%",
-          textAlign: "center",
-        }}>
-        {/* <Img
-          src={`${baseUrl}/static/plaid-logo.png`}
-          width="212"
-          height="88"
-          alt="Plaid"
-          style={{
-            margin: "0 auto",
-          }}
-        /> */}
-        <Text
-          style={{
-            color: "#0a85ea",
-            fontSize: "11px",
-            fontWeight: 700,
-            fontFamily: "HelveticaNeue,Helvetica,Arial,sans-serif",
-            height: "16px",
-            letterSpacing: "0",
-            lineHeight: "16px",
-            margin: "16px 8px 8px 8px",
-            textTransform: "uppercase" as const,
-            textAlign: "center" as const,
-          }}>
-          Verify Your Identity
-        </Text>
-        <Heading
-          style={{
-            color: "#000",
-            display: "inline-block",
-            fontFamily: "HelveticaNeue-Medium,Helvetica,Arial,sans-serif",
-            fontSize: "20px",
-            fontWeight: 500,
-            lineHeight: "24px",
-            marginBottom: "0",
-            marginTop: "0",
-            textAlign: "center" as const,
-          }}>
-          Enter the following code to finish linking.
-        </Heading>
-        <Section
-          style={{
-            background: "rgba(0,0,0,.05)",
-            borderRadius: "4px",
-            margin: "16px auto 14px",
-            verticalAlign: "middle",
-            width: "280px",
-          }}>
-          <Text
-            style={{
-              color: "#000",
-              display: "inline-block",
-              fontFamily: "HelveticaNeue-Bold",
-              fontSize: "32px",
-              fontWeight: 700,
-              letterSpacing: "6px",
-              lineHeight: "40px",
-              paddingBottom: "8px",
-              paddingTop: "8px",
-              margin: "0 auto",
-              width: "100%",
-              textAlign: "center" as const,
-            }}>
-            TEST TEST TEST
-          </Text>
-        </Section>
-        <Text
-          style={{
-            color: "#444",
-            fontSize: "15px",
-            fontFamily: "HelveticaNeue,Helvetica,Arial,sans-serif",
-            letterSpacing: "0",
-            lineHeight: "23px",
-            padding: "0 40px",
-            margin: "0",
-            textAlign: "center" as const,
-          }}>
-          Not expecting this email?
-        </Text>
-        <Text
-          style={{
-            color: "#444",
-            fontSize: "15px",
-            fontFamily: "HelveticaNeue,Helvetica,Arial,sans-serif",
-            letterSpacing: "0",
-            lineHeight: "23px",
-            padding: "0 40px",
-            margin: "0",
-            textAlign: "center" as const,
-          }}>
-          Contact{" "}
-          <Link
-            href="mailto:login@plaid.com"
-            style={{
-              color: "#444",
-              textDecoration: "underline",
-            }}>
-            testing
-          </Link>{" "}
-          if you did not request this code.
-        </Text>
-      </Container>
-      <Text
-        style={{
-          color: "#000",
-          fontSize: "12px",
-          fontWeight: 800,
-          letterSpacing: "0",
-          lineHeight: "23px",
-          margin: "0",
-          marginTop: "20px",
-          fontFamily: "HelveticaNeue,Helvetica,Arial,sans-serif",
-          textAlign: "center" as const,
-          textTransform: "uppercase" as const,
-        }}>
-        Securely powered by Plaid.
-      </Text>
-    </Body>
-  </Html>
-);
-
-export const renderStatusEmail = () => {
-  return render(<StatusEmail />);
+export const renderStatusReportEmail = (status: StatusReportType) => {
+  return render(<StatusReportEmail status={status} />);
 };

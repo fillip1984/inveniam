@@ -7,6 +7,7 @@ import {
   type TaskTags,
   type Comment,
   type Attachment,
+  TaskStatus,
 } from "@prisma/client";
 import { z } from "zod";
 import { parseHtmlDateInputToDate } from "./dateUtils";
@@ -67,7 +68,8 @@ export const taskFormSchema = z
     id: z.string(),
     text: z.string().min(1),
     description: z.string().nullish(),
-    status: z.string().min(1),
+    complete: z.boolean(),
+    status: z.nativeEnum(TaskStatus),
     priority: z.string().nullish(),
     startDate: z.string().nullish(),
     dueDate: z.string().nullish(),
@@ -132,6 +134,14 @@ export const taskFormSchema = z
 
 export type TaskFormSchemaType = z.infer<typeof taskFormSchema>;
 
+export const taskSummary = z.object({
+  id: z.string(),
+  text: z.string(),
+  description: z.string().nullish(),
+});
+
+export type TaskSummaryType = z.infer<typeof taskSummary>;
+
 export const tagFormSchema = z.object({
   id: z.string().nullish(),
   name: z.string(),
@@ -141,28 +151,28 @@ export const tagFormSchema = z.object({
 export type TagFormSchemaType = z.infer<typeof tagFormSchema>;
 
 // misc
-export type StatusOption = {
-  label: string;
-  code: string;
-};
-export const StatusOptions: StatusOption[] = [
-  {
-    label: "Not Started",
-    code: "not_started",
-  },
-  {
-    label: "In progress",
-    code: "in_progress",
-  },
-  {
-    label: "Done",
-    code: "done",
-  },
-  {
-    label: "Overdue",
-    code: "overdue",
-  },
-];
+// export type StatusOption = {
+//   label: string;
+//   code: string;
+// };
+// export const StatusOptions: StatusOption[] = [
+//   {
+//     label: "Not Started",
+//     code: "not_started",
+//   },
+//   {
+//     label: "In progress",
+//     code: "in_progress",
+//   },
+//   {
+//     label: "Done",
+//     code: "done",
+//   },
+//   {
+//     label: "Overdue",
+//     code: "overdue",
+//   },
+// ];
 // {/* </span> */}
 //                 {/* <div className="flex items-center gap-4">
 //                 <span className="flex items-center gap-1">
@@ -200,3 +210,13 @@ export const PriorityOptions: PriorityOption[] = [
     code: "urgent",
   },
 ];
+
+export const statusReport = z.object({
+  date: z.date(),
+  overdue: z.array(taskSummary),
+  dueToday: z.array(taskSummary),
+  dueThisWeek: z.array(taskSummary),
+  completedThisWeek: z.array(taskSummary),
+});
+
+export type StatusReportType = z.infer<typeof statusReport>;

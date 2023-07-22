@@ -1,7 +1,5 @@
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses"; // ES Modules import
 import { startOfDay } from "date-fns";
 import { z } from "zod";
-import { renderStatusEmail } from "~/email/EmailTemplates";
 import { boardFormSchema, bucketPositionUpdate } from "~/utils/types";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -197,65 +195,4 @@ export const BoardRouter = createTRPCRouter({
 
       return result;
     }),
-  sendReport: protectedProcedure.mutation(async ({ ctx }) => {
-    try {
-      console.log("sending email");
-
-      // const email = renderClickMeEmail({ url: "https://inveniam.illizen.com" });
-      const email = renderStatusEmail();
-      if (!email) {
-        throw new Error("failed to render email content");
-      }
-      console.log("email", email);
-
-      const client = new SESClient({
-        region: "us-east-1",
-      });
-      const input = {
-        Source: "inveniam@illizen.com", // required
-        Destination: {
-          ToAddresses: ["fillip1984@gmail.com"],
-          // CcAddresses: ["STRING_VALUE"],
-          // BccAddresses: ["STRING_VALUE"],
-        },
-        Message: {
-          Subject: {
-            Data: "Learning react-email", // required
-            // Charset: "STRING_VALUE",
-          },
-          Body: {
-            // Body
-            // Text: {
-            // Data: "STRING_VALUE", // required
-            // Charset: "STRING_VALUE",
-            // },
-            Html: {
-              Data: email, // required
-              // Charset: "STRING_VALUE",
-            },
-          },
-        },
-        // ReplyToAddresses: ["STRING_VALUE"],
-        // ReturnPath: "STRING_VALUE",
-        // SourceArn: "STRING_VALUE",
-        // ReturnPathArn: "STRING_VALUE",
-        // Tags: [
-        // MessageTagList
-        // {
-        // MessageTag
-        // Name: "STRING_VALUE", // required
-        // Value: "STRING_VALUE", // required
-        // },
-        // ],
-        // ConfigurationSetName: "STRING_VALUE",
-      };
-      const command = new SendEmailCommand(input);
-      await client.send(command);
-
-      return "sucess";
-    } catch (e) {
-      console.error("sending email error", e);
-      return e;
-    }
-  }),
 });

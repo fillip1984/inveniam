@@ -3,11 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
-import { BsFillSendFill } from "react-icons/bs";
 import { FaSignOutAlt, FaSlidersH } from "react-icons/fa";
 import { GiTrail } from "react-icons/gi";
-import { api } from "~/utils/api";
+import { HiDocumentReport } from "react-icons/hi";
 
 const Nav = () => {
   return (
@@ -40,25 +38,18 @@ const AvatarAndMenu = () => {
       .catch(() => console.error("failed to log out"));
   };
 
-  const { mutate: sendEmail } = api.boards.sendReport.useMutation({
-    onSuccess: () => {
-      toast.success("Sent email maybe");
-    },
-  });
-
-  const handleSendEmail = () => {
-    console.log("testing email");
-    sendEmail();
-  };
-
   const menuItems = [
     {
       label: "Preferences",
       icon: <FaSlidersH />,
       action: () => void router.push("/preferences"),
     },
+    {
+      label: "Status Report",
+      icon: <HiDocumentReport />,
+      action: () => void router.push("/status"),
+    },
     { label: "Sign out", icon: <FaSignOutAlt />, action: handleSignOut },
-    { label: "Test email", icon: <BsFillSendFill />, action: handleSendEmail },
   ];
 
   return (
@@ -78,7 +69,7 @@ const AvatarAndMenu = () => {
             />
             <div
               id="avatar-menu"
-              className={`absolute right-0 top-16 z-[999] w-36 rounded bg-white/70 backdrop-blur transition duration-300 ease-in-out ${
+              className={`absolute right-0 top-16 z-[999] w-36 rounded bg-white/90 backdrop-blur transition duration-300 ease-in-out ${
                 avatarMenuOpen ? "" : "hidden"
               }`}>
               <div className="flex flex-col p-2">
@@ -87,7 +78,7 @@ const AvatarAndMenu = () => {
                     type="button"
                     key={menuItem.label}
                     onClick={menuItem.action}
-                    className="flex items-center gap-2 rounded p-2 hover:text-white">
+                    className="flex items-center gap-2 rounded p-2 hover:bg-black/10">
                     {menuItem.icon}
                     {menuItem.label}
                   </button>

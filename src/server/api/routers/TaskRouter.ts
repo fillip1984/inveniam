@@ -1,9 +1,16 @@
-import { parse } from "date-fns";
-import { z } from "zod";
-import { yyyyMMddHyphenated } from "~/utils/dateUtils";
-import { taskFormSchema, taskPositionUpdate } from "~/utils/types";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { SendEmailCommand, SESClient } from "@aws-sdk/client-ses"; // ES Modules import
+import { endOfWeek, format, parse, startOfWeek } from "date-fns";
 import fs from "fs";
+import { z } from "zod";
+import { renderStatusReportEmail } from "~/email/EmailTemplates";
+import { prisma } from "~/server/db";
+import { yyyyMMddHyphenated } from "~/utils/dateUtils";
+import {
+  taskFormSchema,
+  taskPositionUpdate,
+  type StatusReportType,
+} from "~/utils/types";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 const uploadsDir = process.cwd() + "/public/uploads";
 
@@ -197,6 +204,7 @@ export const TaskRouter = createTRPCRouter({
         data: {
           text: input.text,
           description: input.description,
+          complete: input.complete,
           status: input.status,
           priority: input.priority,
           startDate: input.startDate
@@ -244,4 +252,135 @@ export const TaskRouter = createTRPCRouter({
 
       return result;
     }),
+  status: protectedProcedure.query(async () => {
+    const result = generateStatusReport();
+    return result;
+  }),
+  sendReportEmail: protectedProcedure.mutation(async () => {
+    try {
+      console.log("sending email");
+      const status = await generateStatusReport();
+
+      const email = renderStatusReportEmail(status);
+      if (!email) {
+        throw new Error("failed to render email content");
+      }
+
+      const client = new SESClient({
+        region: "us-east-1",
+      });
+      const input = {
+        Source: "inveniam@illizen.com",
+        Destination: {
+          ToAddresses: ["fillip1984@gmail.com"],
+          // CcAddresses: ["STRING_VALUE"],
+          // BccAddresses: ["STRING_VALUE"],
+        },
+        Message: {
+          Subject: {
+            Data: `Status for ${format(new Date(), "EEEE (M/dd)")}`,
+          },
+          Body: {
+            Html: {
+              Data: email,
+            },
+          },
+        },
+        // ReplyToAddresses: ["STRING_VALUE"],
+        // ReturnPath: "STRING_VALUE",
+        // SourceArn: "STRING_VALUE",
+        // ReturnPathArn: "STRING_VALUE",
+        // Tags: [
+        // MessageTagList
+        // {
+        // MessageTag
+        // Name: "STRING_VALUE", // required
+        // Value: "STRING_VALUE", // required
+        // },
+        // ],
+        // ConfigurationSetName: "STRING_VALUE",
+      };
+      const command = new SendEmailCommand(input);
+      await client.send(command);
+
+      return "sucess";
+    } catch (e) {
+      console.error("sending email error", e);
+      return e;
+    }
+  }),
 });
+
+const generateStatusReport = async () => {
+  const date = new Date();
+
+  const overdueQuery = prisma.task.findMany({
+    where: {
+      dueDate: {
+        lte: date,
+      },
+      complete: false,
+    },
+    select: {
+      id: true,
+      text: true,
+      description: true,
+    },
+  });
+
+  const dueTodayQuery = prisma.task.findMany({
+    where: {
+      dueDate: date,
+      complete: false,
+    },
+    select: {
+      id: true,
+      text: true,
+      description: true,
+    },
+  });
+
+  const dueThisWeekQuery = prisma.task.findMany({
+    where: {
+      dueDate: {
+        gte: startOfWeek(date),
+        lte: endOfWeek(date),
+      },
+      complete: false,
+    },
+    select: {
+      id: true,
+      text: true,
+      description: true,
+    },
+  });
+
+  const completedThisWeekQuery = prisma.task.findMany({
+    where: {
+      dueDate: {
+        gte: startOfWeek(date),
+        lte: endOfWeek(date),
+      },
+      complete: true,
+    },
+    select: {
+      id: true,
+      text: true,
+      description: true,
+    },
+  });
+
+  const [overdue, dueToday, dueThisWeek, completedThisWeek] = await Promise.all(
+    [overdueQuery, dueTodayQuery, dueThisWeekQuery, completedThisWeekQuery]
+  );
+
+  const status: StatusReportType = {
+    date,
+    overdue,
+    dueToday,
+    dueThisWeek,
+    completedThisWeek,
+  };
+
+  return status;
+};
