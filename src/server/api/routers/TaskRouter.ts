@@ -31,6 +31,7 @@ export const TaskRouter = createTRPCRouter({
           description: input.description,
           position: input.position,
           bucketId: input.bucketId,
+          userId: ctx.session.user.id,
         },
       });
 

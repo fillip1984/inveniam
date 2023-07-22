@@ -7,7 +7,11 @@ export const TagRouter = createTRPCRouter({
     .input(tagFormSchema)
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.prisma.tag.create({
-        data: { name: input.name, description: input.description },
+        data: {
+          name: input.name,
+          description: input.description,
+          userId: ctx.session.user.id,
+        },
       });
       return result;
     }),
