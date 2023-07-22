@@ -6,6 +6,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
+import { PiDotsSixBold } from "react-icons/pi";
 import { api } from "~/utils/api";
 import { type BucketAndEverything, type DraggableData } from "~/utils/types";
 import TaskCard from "../tasks/TaskCard";
@@ -77,42 +78,49 @@ const BucketComponent = ({
   }, [showTaskModal]);
 
   return (
-    <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
+    <div ref={setNodeRef} style={style}>
       <div
         className={clsx(
-          "max-h-[88vh] w-[350px] select-none overflow-hidden overflow-y-scroll rounded-lg border bg-primary p-4 ",
+          "relative max-h-[88vh] w-[350px] select-none overflow-hidden overflow-y-scroll rounded-lg border bg-primary",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-1 scale-105": isOverlay,
           }
         )}>
-        <div className="my-2 flex justify-between">
-          <div className="flex items-center gap-2">
-            <h5>{bucket.name}</h5>
-            <span className="text-primary">{bucket.tasks.length}</span>
-          </div>
-          <button
-            onClick={handleDeleteBucket}
-            className="text rounded-full bg-danger px-2 text-black">
-            X
-          </button>
+        <div
+          {...attributes}
+          {...listeners}
+          className="absolute left-1/2 text-xl text-white/60">
+          <PiDotsSixBold />
         </div>
-
-        <NewTask bucket={bucket} />
-        <div className="mb-8 flex flex-col gap-2">
-          <SortableContext
-            items={bucket.tasks}
-            // TODO: not sure what strategy does... keeping for now
-            strategy={verticalListSortingStrategy}>
-            {bucket.tasks.map((task, index) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                position={index}
-                handleTaskSelected={handleTaskSelected}
-              />
-            ))}
-          </SortableContext>
+        <div className="p-2">
+          <div className="mb-2 flex justify-between">
+            <div className="flex items-center gap-2">
+              <h5>{bucket.name}</h5>
+              <span className="text-primary">{bucket.tasks.length}</span>
+            </div>
+            <button
+              onClick={handleDeleteBucket}
+              className="text rounded-full bg-danger px-2 text-black">
+              X
+            </button>
+          </div>
+          <NewTask bucket={bucket} />
+          <div className="mb-8 flex flex-col gap-2">
+            <SortableContext
+              items={bucket.tasks}
+              // TODO: not sure what strategy does... keeping for now
+              strategy={verticalListSortingStrategy}>
+              {bucket.tasks.map((task, index) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  position={index}
+                  handleTaskSelected={handleTaskSelected}
+                />
+              ))}
+            </SortableContext>
+          </div>
         </div>
       </div>
 
