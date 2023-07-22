@@ -169,7 +169,7 @@ model Comment {
     text      String
     posted    DateTime
 
-    task   Task   @relation(fields: [taskId], references: [id])
+    task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
     taskId String
 }
 
@@ -180,7 +180,7 @@ model CheckListItem {
     text      String
     complete  Boolean  @default(false)
 
-    task   Task   @relation(fields: [taskId], references: [id])
+    task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
     taskId String
 }
 
@@ -192,7 +192,7 @@ model Attachment {
     added     DateTime
     location  String
 
-    task   Task   @relation(fields: [taskId], references: [id])
+    task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
     taskId String
 }
 

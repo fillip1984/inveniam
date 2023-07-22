@@ -1,6 +1,13 @@
 import { SendEmailCommand, SESClient } from "@aws-sdk/client-ses"; // ES Modules import
-import { endOfWeek, format, startOfWeek } from "date-fns";
-import { zonedTimeToUtc } from "date-fns-tz";
+import {
+  addDays,
+  endOfDay,
+  endOfWeek,
+  format,
+  startOfDay,
+  startOfWeek,
+} from "date-fns";
+import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
 import fs from "fs";
 import { z } from "zod";
 import { renderStatusReportEmail } from "~/email/EmailTemplates";
@@ -226,7 +233,7 @@ export const TaskRouter = createTRPCRouter({
           text: input.text,
           description: input.description,
           complete: input.complete,
-          status: input.status,
+          // status: input.status,
           priority: input.priority,
           startDate: input.startDate,
           dueDate: input.dueDate,
@@ -329,13 +336,21 @@ export const TaskRouter = createTRPCRouter({
 });
 
 const generateStatusReport = async (userId: string) => {
-  const date = new Date();
+  const timezone = "America/New_York";
+  const nowUTC = new Date();
+  const now = utcToZonedTime(nowUTC, timezone);
+  const today = startOfDay(now);
+  const tomorrow = addDays(today, 1);
+  const todayStart = startOfDay(now);
+  const todayEnd = endOfDay(now);
+  const weekStart = startOfWeek(now);
+  const weekEnd = endOfWeek(now);
 
   const overdueQuery = prisma.task.findMany({
     where: {
       userId: userId,
       dueDate: {
-        lt: date,
+        lt: zonedTimeToUtc(today, timezone),
       },
       complete: false,
     },
@@ -348,7 +363,10 @@ const generateStatusReport = async (userId: string) => {
 
   const dueTodayQuery = prisma.task.findMany({
     where: {
-      dueDate: date,
+      dueDate: {
+        gte: zonedTimeToUtc(todayStart, timezone),
+        lte: zonedTimeToUtc(todayEnd, timezone),
+      },
       complete: false,
     },
     select: {
@@ -358,11 +376,11 @@ const generateStatusReport = async (userId: string) => {
     },
   });
 
-  const dueThisWeekQuery = prisma.task.findMany({
+  const upcomingQuery = prisma.task.findMany({
     where: {
       dueDate: {
-        gte: startOfWeek(date),
-        lte: endOfWeek(date),
+        gte: zonedTimeToUtc(tomorrow, timezone),
+        lte: zonedTimeToUtc(weekEnd, timezone),
       },
       complete: false,
     },
@@ -376,8 +394,8 @@ const generateStatusReport = async (userId: string) => {
   const completedThisWeekQuery = prisma.task.findMany({
     where: {
       dueDate: {
-        gte: startOfWeek(date),
-        lte: endOfWeek(date),
+        gte: zonedTimeToUtc(weekStart, timezone),
+        lte: zonedTimeToUtc(weekEnd, timezone),
       },
       complete: true,
     },
@@ -388,15 +406,18 @@ const generateStatusReport = async (userId: string) => {
     },
   });
 
-  const [overdue, dueToday, dueThisWeek, completedThisWeek] = await Promise.all(
-    [overdueQuery, dueTodayQuery, dueThisWeekQuery, completedThisWeekQuery]
-  );
+  const [overdue, dueToday, upcoming, completedThisWeek] = await Promise.all([
+    overdueQuery,
+    dueTodayQuery,
+    upcomingQuery,
+    completedThisWeekQuery,
+  ]);
 
   const status: StatusReportType = {
-    date,
+    date: now,
     overdue,
     dueToday,
-    dueThisWeek,
+    upcoming,
     completedThisWeek,
   };
 

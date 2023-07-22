@@ -42,11 +42,10 @@ export default function StatusReport() {
                 <h4>Today</h4>
                 <p className="text-6xl font-bold">{status.dueToday.length}</p>
               </div>
-              <div className="flex h-[160px] w-[150px] flex-col items-center justify-center rounded-lg bg-accent2 text-black">
-                <h4 className="upp">This Week</h4>
-                <p className="text-6xl font-bold">
-                  {status.dueThisWeek.length}
-                </p>
+              <div className="relative flex h-[160px] w-[150px] flex-col items-center justify-center rounded-lg bg-accent2 text-black">
+                <h4 className="upp">Upcoming</h4>
+                <p className="text-6xl font-bold">{status.upcoming.length}</p>
+                <span className="absolute bottom-2 text-xs">this week</span>
               </div>
               <div className="relative flex h-[160px] w-[150px] flex-col items-center justify-center rounded-lg bg-warning text-black">
                 <h4>Completed</h4>
@@ -91,11 +90,11 @@ export default function StatusReport() {
             </div>
 
             <div className="rounded-xl bg-accent2/50 px-4 py-2">
-              <h3 className="mb-2 font-bold text-accent2">This Week</h3>
-              {status.dueThisWeek.length === 0 && (
+              <h3 className="mb-2 font-bold text-accent2">Upcoming</h3>
+              {status.upcoming.length === 0 && (
                 <p className="text-xs">Nothing due</p>
               )}
-              {status.dueThisWeek.map((task) => (
+              {status.upcoming.map((task) => (
                 <div key={task.id}>
                   <label>
                     <input type="checkbox" className="mx-2 rounded-full" />

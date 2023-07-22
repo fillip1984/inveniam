@@ -89,27 +89,32 @@ const TaskModal = ({
   } = useFieldArray({ control, name: "comments" });
   const commentsState = useWatch({ control, name: "comments" });
 
-  // const {
-  //   append: appendAttachment,
-  //   remove: removeAttachment,
-  //   fields: attachments,
-  // } = useFieldArray({ control, name: "attachments" });
-  // const attachmentState = useWatch({ control, name: "attachments" });
+  const {
+    append: appendAttachment,
+    remove: removeAttachment,
+    fields: attachments,
+  } = useFieldArray({ control, name: "attachments" });
+  const attachmentState = useWatch({ control, name: "attachments" });
 
   const isComplete = useWatch({ control, name: "complete" });
+
+  const textWatch = useWatch({ control, name: "text" });
+  useEffect(() => {
+    console.log("text", textWatch);
+  }, [textWatch]);
 
   useEffect(() => {
     if (task) {
       reset({
         id: task.id,
+        bucketId: task.bucket.id,
         text: task.text,
         description: task.description,
         complete: task.complete,
-        status: task.status,
+        // status: task.status,
         priority: task.priority,
         startDate: task.startDate ? format(task.startDate, "yyyy-MM-dd") : "",
         dueDate: task.dueDate ? format(task.dueDate, "yyyy-MM-dd") : "",
-        bucketId: task.bucket.id,
         checklistItems: task.checkListItems,
         taskTag: task.tags,
         comments: task.comments,
@@ -136,11 +141,16 @@ const TaskModal = ({
       close();
     },
   });
+
   const handleDelete = () => {
     if (task) {
       deleteTask({ taskId: task.id });
     }
   };
+
+  useEffect(() => {
+    console.log("errors", errors);
+  }, [errors]);
 
   return (
     <div
@@ -197,18 +207,30 @@ const TaskModal = ({
             onSubmit={handleSubmit(onSubmit)}
             id="taskForm"
             className="h-full overflow-y-scroll p-2 pb-44">
+            <input type="hidden" {...register("id")} />
+            <input type="hidden" {...register("bucketId")} />
+
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
                 <span className="w-8 text-center">
-                  <input type="checkbox" {...register("complete")} />
+                  <input
+                    type="checkbox"
+                    {...register("complete")}
+                    className="h-6 w-6 rounded"
+                  />
                 </span>
-                <input
-                  type="text"
-                  {...register("text")}
-                  className={clsx("", {
-                    "line-through": isComplete,
-                  })}
-                />
+                <div className="w-full">
+                  <input
+                    type="text"
+                    {...register("text")}
+                    className={clsx("", {
+                      "line-through": isComplete,
+                    })}
+                  />
+                  {errors.text && (
+                    <span className="ml-2 text-sm">{errors.text.message}</span>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <label
@@ -303,11 +325,15 @@ const TaskModal = ({
                   <FaCalendarDay className="text-2xl text-white" />
                   <span>Due Date</span>
                 </label>
-                <input type="date" {...register("dueDate")} id="dueDate" />
+                <div className="w-full">
+                  <input type="date" {...register("dueDate")} id="dueDate" />
 
-                {errors.dueDate && (
-                  <span className="ml-2 text-sm">{errors.dueDate.message}</span>
-                )}
+                  {errors.dueDate && (
+                    <span className="ml-2 text-sm">
+                      {errors.dueDate.message}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="my-2 flex items-center gap-2">
                 <label className="flex items-center" />

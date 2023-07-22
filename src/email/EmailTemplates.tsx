@@ -84,7 +84,7 @@ export const StatusReportEmail = ({ status }: { status: StatusReportType }) => {
                 <Column
                   align="center"
                   className="w-[100px] rounded-t-lg bg-accent2/30 text-xl">
-                  <Text className="text-xl">This Week</Text>
+                  <Text className="text-xl">Upcoming</Text>
                 </Column>
                 <Column
                   align="center"
@@ -96,7 +96,7 @@ export const StatusReportEmail = ({ status }: { status: StatusReportType }) => {
                 <Column
                   align="center"
                   className="w-[100px] rounded-b-lg bg-accent2/30">
-                  <Text className="text-6xl">{status.dueThisWeek.length}</Text>
+                  <Text className="text-6xl">{status.upcoming.length}</Text>
                 </Column>
                 <Column
                   align="center"
@@ -145,11 +145,11 @@ export const StatusReportEmail = ({ status }: { status: StatusReportType }) => {
 
             <Section className="my-2 rounded-xl bg-accent2/30 px-1">
               <Row>
-                <h3 className="mb-2 font-bold text-accent2">This Week</h3>
-                {status.dueThisWeek.length === 0 && (
+                <h3 className="mb-2 font-bold text-accent2">Upcoming</h3>
+                {status.upcoming.length === 0 && (
                   <p className="text-xs">Nothing due</p>
                 )}
-                {status.dueThisWeek.map((task) => (
+                {status.upcoming.map((task) => (
                   <div key={task.id}>
                     <label>
                       <input type="checkbox" className="mx-2 rounded-full" />

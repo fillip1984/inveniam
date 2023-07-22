@@ -75,14 +75,14 @@ export type BucketPositionUpdateType = z.infer<typeof bucketPositionUpdate>;
 export const taskFormSchema = z
   .object({
     id: z.string(),
-    text: z.string().min(1),
+    bucketId: z.string(),
+    text: z.string().min(1, { message: "Task text is required" }),
     description: z.string().nullish(),
     complete: z.boolean(),
-    status: z.nativeEnum(TaskStatus),
+    // status: z.nativeEnum(TaskStatus),
     priority: z.string().nullish(),
     startDate: z.date().or(z.string()).nullish(),
     dueDate: z.date().or(z.string()).nullish(),
-    bucketId: z.string(),
     comments: z.array(
       z.object({
         id: z.string().nullish(),
@@ -234,7 +234,7 @@ export const statusReport = z.object({
   date: z.date(),
   overdue: z.array(taskSummary),
   dueToday: z.array(taskSummary),
-  dueThisWeek: z.array(taskSummary),
+  upcoming: z.array(taskSummary),
   completedThisWeek: z.array(taskSummary),
 });
 

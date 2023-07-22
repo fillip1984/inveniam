@@ -89,10 +89,9 @@ const TaskCard = ({
                 className={clsx(
                   "flex items-center gap-1 rounded bg-accent2 px-1 text-xs",
                   {
-                    "bg-danger": isAfter(
-                      startOfDay(new Date()),
-                      startOfDay(task.dueDate)
-                    ),
+                    "bg-danger":
+                      !task.complete &&
+                      isAfter(startOfDay(new Date()), startOfDay(task.dueDate)),
                   }
                 )}>
                 <FaCalendarDay />
