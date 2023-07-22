@@ -51,11 +51,6 @@ const NotSignedInView = () => {
 
   return (
     <div className="mx-auto flex h-screen w-[350px] flex-col items-center pt-8">
-      <div className="mb-8 flex items-center justify-center">
-        <h2>inveniam</h2>
-        {/* <FaHourglassStart className="h-24 w-24" /> */}
-      </div>
-
       <div className="flex flex-col items-center gap-4 rounded-lg border-2 border-white/40 px-8 py-4">
         <h3 className="mb-2">Please sign in</h3>
 

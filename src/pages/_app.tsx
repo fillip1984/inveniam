@@ -13,7 +13,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <Nav />
-      <main className="mt-16 min-h-screen bg-black pb-48 text-white">
+      <main className="min-h-screen bg-black pb-48 pt-16 text-white">
         <Component {...pageProps} />
       </main>
       <Toaster />
