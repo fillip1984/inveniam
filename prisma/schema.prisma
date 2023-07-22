@@ -112,12 +112,12 @@ model Task {
     updatedAt   DateTime   @updatedAt
     text        String
     description String?
-    position    Int
     complete    Boolean    @default(false)
     status      TaskStatus @default(NOT_STARTED)
     priority    String? //switch to enum after migrating to something other than SQLite
     startDate   DateTime?
     dueDate     DateTime?
+    position    Int
 
     bucket   Bucket @relation(fields: [bucketId], references: [id])
     bucketId String
