@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TaskStatus } from "@prisma/client";
+// import { TaskStatus } from "@prisma/client";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { useEffect } from "react";
@@ -12,15 +12,16 @@ import {
 import { BsChatSquareTextFill } from "react-icons/bs";
 import { CiMemoPad } from "react-icons/ci";
 import {
-  FaBitbucket,
+  // FaBitbucket,
   FaCalendarDay,
   FaChevronLeft,
   FaEllipsisV,
   FaFlag,
   FaList,
+  // FaPaperclip,
   FaTag,
 } from "react-icons/fa";
-import { TbCircleHalfVertical } from "react-icons/tb";
+// import { TbCircleHalfVertical } from "react-icons/tb";
 import TextareaAutosize from "react-textarea-autosize";
 import { api } from "~/utils/api";
 import {
@@ -28,6 +29,7 @@ import {
   taskFormSchema,
   type TaskFormSchemaType,
 } from "~/utils/types";
+// import AttachmentListView from "./AttachmentListView";
 import CheckListView from "./CheckListView";
 import CommentListView from "./CommentListView";
 import TagSelector from "./TagSelector";
@@ -105,7 +107,6 @@ const TaskModal = ({
         complete: task.complete,
         status: task.status,
         priority: task.priority,
-        // TODO: figure out optimal way to do this, at first, I ended up using defaultValue for now on the field. But kept having issues with validation...would have to use coerce, ended up parsing/formatting depending on where we are
         startDate: task.startDate ? format(task.startDate, "yyyy-MM-dd") : "",
         dueDate: task.dueDate ? format(task.dueDate, "yyyy-MM-dd") : "",
         bucketId: task.bucket.id,
@@ -114,8 +115,6 @@ const TaskModal = ({
         comments: task.comments,
         attachments: task.attachments,
       });
-      // TODO: this also didn't work
-      // setValue("startDate", task.startDate?.toISOString().substring(0, 10));
     }
   }, [reset, task]);
 
