@@ -1,3 +1,4 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { type GetServerSidePropsContext } from "next";
 import {
@@ -188,13 +189,9 @@ export const authOptions: NextAuthOptions = {
         },
       };
     },
-    // jwt: ({ token, user }) => {
-    //   console.log("token", token, user);
-    //   return token;
-    // },
   },
   session: { strategy: "jwt" },
-  // adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(prisma),
   providers: [
     GithubProvider({
       clientId: env.NEXTAUTH_GITHUB_CLIENT_ID,
@@ -248,7 +245,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (!potentialUser.password) {
-          throw new Error("Username or password is invalid1");
+          throw new Error("Username or password is invalid");
         }
 
         if (bcrypt.compareSync(credentials.password, potentialUser.password)) {
