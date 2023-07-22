@@ -12,10 +12,8 @@ import {
   SortableContext,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
 import { useDebounce } from "usehooks-ts";
 import BucketComponent from "~/components/boards/BucketComponent";
 import NewBucket from "~/components/boards/NewBucket";
@@ -258,12 +256,6 @@ const BoardView = () => {
           placeholder="Search for tasks on this board..."
           className="w-1/2"
         />
-        <Link
-          href="/"
-          className="flex items-center gap-2 rounded border border-primary px-4 py-2 text-primary">
-          <FaArrowLeft />
-          Back to Boards
-        </Link>
       </div>
 
       {isLoading && <Loading />}

@@ -22,6 +22,18 @@ export const BoardRouter = createTRPCRouter({
         id: true,
         name: true,
         description: true,
+        buckets: {
+          select: {
+            name: true,
+            tasks: {
+              select: {
+                text: true,
+                description: true,
+                complete: true,
+              },
+            },
+          },
+        },
       },
       where: {
         userId: ctx.session.user.id,
@@ -142,6 +154,21 @@ export const BoardRouter = createTRPCRouter({
           id: input.id,
         },
       });
+    }),
+  readAllBuckets: protectedProcedure
+    .input(z.object({ boardId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const results = ctx.prisma.bucket.findMany({
+        where: { boardId: input.boardId },
+        select: {
+          id: true,
+          name: true,
+        },
+        orderBy: {
+          position: "asc",
+        },
+      });
+      return results;
     }),
   addBucket: protectedProcedure
     .input(

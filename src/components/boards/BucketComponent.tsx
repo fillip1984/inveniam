@@ -120,6 +120,7 @@ const BucketComponent = ({
         isOpen={showTaskModal}
         close={() => setShowTaskModal(false)}
         taskId={taskId}
+        boardId={bucket.boardId}
       />
     </div>
   );

@@ -269,14 +269,14 @@ export const TaskRouter = createTRPCRouter({
 
       return result;
     }),
-  status: protectedProcedure.query(async () => {
-    const result = generateStatusReport();
+  status: protectedProcedure.query(async ({ ctx }) => {
+    const result = generateStatusReport(ctx.session.user.id);
     return result;
   }),
-  sendReportEmail: protectedProcedure.mutation(async () => {
+  sendReportEmail: protectedProcedure.mutation(async ({ ctx }) => {
     try {
       console.log("sending email");
-      const status = await generateStatusReport();
+      const status = await generateStatusReport(ctx.session.user.id);
 
       const email = renderStatusReportEmail(status);
       if (!email) {
@@ -328,11 +328,12 @@ export const TaskRouter = createTRPCRouter({
   }),
 });
 
-const generateStatusReport = async () => {
+const generateStatusReport = async (userId: string) => {
   const date = new Date();
 
   const overdueQuery = prisma.task.findMany({
     where: {
+      userId: userId,
       dueDate: {
         lt: date,
       },

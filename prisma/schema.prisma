@@ -104,8 +104,8 @@ model Bucket {
     position  Int //@unique //// TODO: https://stackoverflow.com/questions/75882073/prisma-update-two-items-switch-around-unique-constraint-on-index
 
     tasks   Task[]
-    board   Board?  @relation(fields: [boardId], references: [id])
-    boardId String?
+    board   Board  @relation(fields: [boardId], references: [id])
+    boardId String
 }
 
 model Task {

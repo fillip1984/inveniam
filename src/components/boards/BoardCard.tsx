@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type MouseEvent } from "react";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaPencilAlt, FaTrash, FaTasks } from "react-icons/fa";
 import { api } from "~/utils/api";
 import { type BoardSummary } from "~/utils/types";
 
@@ -34,6 +34,16 @@ const BoardCard = ({ board }: { board: BoardSummary }) => {
       <div className="flex-1">
         <h3>{board.name}</h3>
         <p>{board.description}</p>
+        <span className="flex items-center gap-2">
+          <FaTasks />
+          {
+            board.buckets
+              .map((bucket) => bucket.tasks)
+              .flat(1)
+              .filter((task) => !task.complete).length
+          }
+          {/* // .reduce((taskCount, tasks) => (taskCount += tasks.length), 0)} */}
+        </span>
       </div>
       <div className="flex justify-end gap-2">
         <button

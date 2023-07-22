@@ -36,10 +36,12 @@ const TaskModal = ({
   isOpen,
   close,
   taskId,
+  boardId,
 }: {
   isOpen: boolean;
   close: () => void;
   taskId: string;
+  boardId: string;
 }) => {
   const { data: task } = api.tasks.readOne.useQuery(
     { taskId },
@@ -47,6 +49,8 @@ const TaskModal = ({
       refetchOnWindowFocus: false,
     }
   );
+
+  // const { data: buckets } = api.boards.readAllBuckets.useQuery({ boardId });
 
   const {
     register,
@@ -105,7 +109,6 @@ const TaskModal = ({
         startDate: task.startDate ? format(task.startDate, "yyyy-MM-dd") : "",
         dueDate: task.dueDate ? format(task.dueDate, "yyyy-MM-dd") : "",
         bucketId: task.bucket.id,
-        bucketName: task.bucket.name,
         checklistItems: task.checkListItems,
         taskTag: task.tags,
         comments: task.comments,
@@ -234,7 +237,7 @@ const TaskModal = ({
                   taskTags={taskTags}
                 />
               </div>
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <label
                   htmlFor="bucket"
                   className="flex w-36 items-center gap-2 pl-2">
@@ -242,15 +245,14 @@ const TaskModal = ({
                   <span>Bucket</span>
                 </label>
                 <select id="bucket" {...register("bucketId")}>
-                  <option value={task?.bucket.id}>{task?.bucket.name}</option>
-                  {/* {StatusOptions.map((status) => (
-                    <option key={status.code} value={status.code}>
-                      {status.label}
+                  {buckets?.map((bucket) => (
+                    <option key={bucket.id} value={bucket.id}>
+                      {bucket.name}
                     </option>
-                  ))} */}
+                  ))}
                 </select>
-              </div>
-              <div className="flex items-center gap-2">
+              </div> */}
+              {/* <div className="flex items-center gap-2">
                 <label
                   htmlFor="status"
                   className="flex w-36 items-center gap-2 pl-2">
@@ -269,7 +271,7 @@ const TaskModal = ({
                     Complete, will reoccur
                   </option>
                 </select>
-              </div>
+              </div> */}
               <div className="flex items-center gap-2">
                 <label
                   htmlFor="priority"

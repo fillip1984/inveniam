@@ -16,7 +16,10 @@ export const TagRouter = createTRPCRouter({
       return result;
     }),
   readAll: protectedProcedure.query(async ({ ctx }) => {
-    const result = await ctx.prisma.tag.findMany({ orderBy: { name: "asc" } });
+    const result = await ctx.prisma.tag.findMany({
+      where: { userId: ctx.session.user.id },
+      orderBy: { name: "asc" },
+    });
     return result;
   }),
   readOne: protectedProcedure

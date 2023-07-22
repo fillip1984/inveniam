@@ -18,6 +18,14 @@ export type BoardSummary = {
   id: string;
   name: string;
   description: string;
+  buckets: {
+    name: string;
+    tasks: {
+      text: string;
+      description: string | null;
+      complete: boolean;
+    }[];
+  }[];
 };
 export type BoardAndEverything = Board & {
   buckets: BucketAndEverything[];
@@ -75,7 +83,6 @@ export const taskFormSchema = z
     startDate: z.date().or(z.string()).nullish(),
     dueDate: z.date().or(z.string()).nullish(),
     bucketId: z.string(),
-    bucketName: z.string(),
     comments: z.array(
       z.object({
         id: z.string().nullish(),
