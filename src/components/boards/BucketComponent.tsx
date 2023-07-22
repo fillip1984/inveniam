@@ -64,7 +64,7 @@ const BucketComponent = ({
     <div ref={setNodeRef} style={style}>
       <div
         className={clsx(
-          "relative max-h-[88vh] w-[350px] select-none overflow-hidden overflow-y-scroll rounded-lg border bg-primary",
+          "relative max-h-[88vh] w-[350px] select-none overflow-y-auto rounded-lg border bg-primary",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-1 scale-105": isOverlay,

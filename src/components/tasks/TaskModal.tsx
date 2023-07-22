@@ -206,7 +206,7 @@ const TaskModal = ({
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onSubmit={handleSubmit(onSubmit)}
             id="taskForm"
-            className="h-full overflow-y-scroll p-2 pb-44">
+            className="h-full overflow-y-auto p-2 pb-44">
             <input type="hidden" {...register("id")} />
             <input type="hidden" {...register("bucketId")} />
 
