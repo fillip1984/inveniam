@@ -33,7 +33,7 @@ export default function StatusReport() {
         <>
           <div className="mb-6">
             <h3 className="mb-2 font-bold">Totals</h3>
-            <div className="flex w-full justify-center gap-2">
+            <div className="flex w-full flex-wrap justify-center gap-2">
               <div className="flex h-[160px] w-[150px] flex-col items-center justify-center rounded-lg bg-danger text-white">
                 <h4>Overdue</h4>
                 <p className="text-6xl font-bold">{status.overdue.length}</p>

@@ -69,7 +69,7 @@ const AvatarAndMenu = () => {
             />
             <div
               id="avatar-menu"
-              className={`absolute right-0 top-16 z-[999] w-36 rounded bg-white/90 backdrop-blur transition duration-300 ease-in-out ${
+              className={`absolute right-0 top-16 z-[999] w-44 rounded bg-white/90 backdrop-blur transition duration-300 ease-in-out ${
                 avatarMenuOpen ? "" : "hidden"
               }`}>
               <div className="flex flex-col p-2">

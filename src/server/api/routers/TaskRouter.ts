@@ -1,10 +1,10 @@
 import { SendEmailCommand, SESClient } from "@aws-sdk/client-ses"; // ES Modules import
-import { endOfWeek, format, parse, startOfWeek } from "date-fns";
+import { endOfWeek, format, startOfWeek } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 import fs from "fs";
 import { z } from "zod";
 import { renderStatusReportEmail } from "~/email/EmailTemplates";
 import { prisma } from "~/server/db";
-import { yyyyMMddHyphenated } from "~/utils/dateUtils";
 import {
   taskFormSchema,
   taskPositionUpdate,
@@ -197,6 +197,26 @@ export const TaskRouter = createTRPCRouter({
           },
         });
       }
+
+      //date time adjustments
+      console.log(input.startDate, input.dueDate);
+      if (input.startDate) {
+        input.startDate = zonedTimeToUtc(input.startDate, "America/New_York");
+      } else {
+        input.startDate = null;
+      }
+
+      if (input.dueDate) {
+        input.dueDate = zonedTimeToUtc(input.dueDate, "America/New_York");
+      } else {
+        input.dueDate = null;
+      }
+      console.log(
+        "adjusted to hardcoded timezone! America/New_York, should pull from user's location or preferences",
+        input.startDate,
+        input.dueDate
+      );
+
       const result = ctx.prisma.task.update({
         where: {
           id: input.id,
@@ -207,12 +227,8 @@ export const TaskRouter = createTRPCRouter({
           complete: input.complete,
           status: input.status,
           priority: input.priority,
-          startDate: input.startDate
-            ? parse(input.startDate, yyyyMMddHyphenated, new Date())
-            : null,
-          dueDate: input.dueDate
-            ? parse(input.dueDate, yyyyMMddHyphenated, new Date())
-            : null,
+          startDate: input.startDate,
+          dueDate: input.dueDate,
         },
       });
 

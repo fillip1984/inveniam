@@ -293,16 +293,7 @@ const TaskModal = ({
                   <FaCalendarDay className="text-2xl text-white" />
                   <span>Start Date</span>
                 </label>
-                <input
-                  type="date"
-                  {...register("startDate", {
-                    // valueAsDate: true,
-                  })}
-                  // defaultValue={
-                  //   task?.startDate?.toISOString().substring(0, 10) ?? ""
-                  // }
-                  id="startDate"
-                />
+                <input type="date" {...register("startDate")} id="startDate" />
               </div>
               <div
                 className={`flex flex-col  ${
@@ -315,16 +306,7 @@ const TaskModal = ({
                     <FaCalendarDay className="text-2xl" />
                     <span>Due Date</span>
                   </label>
-                  <input
-                    type="date"
-                    {...register("dueDate", {
-                      // valueAsDate: true,
-                    })}
-                    // defaultValue={
-                    //   task?.dueDate?.toISOString().substring(0, 10) ?? ""
-                    // }
-                    id="dueDate"
-                  />
+                  <input type="date" {...register("dueDate")} id="dueDate" />
                 </div>
                 {errors.dueDate && (
                   <span className="ml-2 text-sm">{errors.dueDate.message}</span>

@@ -1,16 +1,17 @@
 import {
-  type Tag,
+  TaskStatus,
+  type Attachment,
   type Board,
   type Bucket,
   type CheckListItem,
+  type Comment,
+  type Tag,
   type Task,
   type TaskTags,
-  type Comment,
-  type Attachment,
-  TaskStatus,
 } from "@prisma/client";
+import { parse } from "date-fns";
 import { z } from "zod";
-import { parseHtmlDateInputToDate } from "./dateUtils";
+import { yyyyMMddHyphenated } from "./dateUtils";
 
 // short hand type stuff
 export type BoardSummary = {
@@ -71,8 +72,8 @@ export const taskFormSchema = z
     complete: z.boolean(),
     status: z.nativeEnum(TaskStatus),
     priority: z.string().nullish(),
-    startDate: z.string().nullish(),
-    dueDate: z.string().nullish(),
+    startDate: z.date().or(z.string()).nullish(),
+    dueDate: z.date().or(z.string()).nullish(),
     bucketId: z.string(),
     bucketName: z.string(),
     comments: z.array(
@@ -112,8 +113,19 @@ export const taskFormSchema = z
   .refine(
     (data) => {
       // may be able to refine further with a coerce to date
-      const startDate = parseHtmlDateInputToDate(data.startDate);
-      const dueDate = parseHtmlDateInputToDate(data.dueDate);
+      let startDate = null;
+      let dueDate = null;
+      if (data.startDate) {
+        startDate = parse(
+          data.startDate as string,
+          yyyyMMddHyphenated,
+          new Date()
+        );
+      }
+
+      if (data.dueDate) {
+        dueDate = parse(data.dueDate as string, yyyyMMddHyphenated, new Date());
+      }
 
       if (!dueDate || !startDate) {
         //valid since there isn't both a start and a due date
