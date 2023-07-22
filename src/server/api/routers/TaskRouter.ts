@@ -333,7 +333,7 @@ const generateStatusReport = async () => {
   const overdueQuery = prisma.task.findMany({
     where: {
       dueDate: {
-        lte: date,
+        lt: date,
       },
       complete: false,
     },
