@@ -192,6 +192,7 @@ export const authOptions: NextAuthOptions = {
   },
   session: { strategy: "jwt" },
   adapter: PrismaAdapter(prisma),
+  pages: { signIn: "/", signOut: "/", error: "/" },
   providers: [
     GithubProvider({
       clientId: env.NEXTAUTH_GITHUB_CLIENT_ID,

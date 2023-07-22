@@ -297,19 +297,15 @@ const TaskModal = ({
                 </label>
                 <input type="date" {...register("startDate")} id="startDate" />
               </div>
-              <div
-                className={`flex flex-col  ${
-                  errors.dueDate ? "text-danger" : "text-white"
-                }`}>
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="dueDate"
-                    className="pl-2text-white flex w-36 items-center gap-2">
-                    <FaCalendarDay className="text-2xl" />
-                    <span>Due Date</span>
-                  </label>
-                  <input type="date" {...register("dueDate")} id="dueDate" />
-                </div>
+              <div className="flex items-center gap-2">
+                <label
+                  htmlFor="dueDate"
+                  className="flex w-36 items-center gap-2 pl-2">
+                  <FaCalendarDay className="text-2xl text-white" />
+                  <span>Due Date</span>
+                </label>
+                <input type="date" {...register("dueDate")} id="dueDate" />
+
                 {errors.dueDate && (
                   <span className="ml-2 text-sm">{errors.dueDate.message}</span>
                 )}
