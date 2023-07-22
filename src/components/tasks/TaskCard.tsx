@@ -62,7 +62,12 @@ const TaskCard = ({
           </div>
         )}
 
-        <p className="m-2">{task.text}</p>
+        <p
+          className={clsx("m-2", {
+            "line-through": task.complete,
+          })}>
+          {task.text}
+        </p>
         {task.attachments.length > 0 && task.attachments[0]?.location && (
           <Image
             height={150}

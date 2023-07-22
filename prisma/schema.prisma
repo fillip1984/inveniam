@@ -107,13 +107,14 @@ model Bucket {
 }
 
 model Task {
-    id          String    @id @default(cuid())
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
+    id          String     @id @default(cuid())
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
     text        String
     description String?
     position    Int
-    status      String    @default("not_started") //switch to enum after migrating to something other than SQLite
+    complete    Boolean    @default(false)
+    status      TaskStatus @default(NOT_STARTED)
     priority    String? //switch to enum after migrating to something other than SQLite
     startDate   DateTime?
     dueDate     DateTime?
@@ -185,4 +186,12 @@ model Attachment {
 
     task   Task   @relation(fields: [taskId], references: [id])
     taskId String
+}
+
+enum TaskStatus {
+    NOT_STARTED
+    IN_PROGRESS
+    BLOCKED_WAITING
+    COMPLETE
+    COMPLETE_WAITING_ON_NEXT_RECURRENCE
 }

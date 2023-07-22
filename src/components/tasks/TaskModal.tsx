@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { TaskStatus } from "@prisma/client";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { useEffect } from "react";
@@ -24,7 +25,6 @@ import TextareaAutosize from "react-textarea-autosize";
 import { api } from "~/utils/api";
 import {
   PriorityOptions,
-  StatusOptions,
   taskFormSchema,
   type TaskFormSchemaType,
 } from "~/utils/types";
@@ -90,12 +90,15 @@ const TaskModal = ({
   // } = useFieldArray({ control, name: "attachments" });
   // const attachmentState = useWatch({ control, name: "attachments" });
 
+  const isComplete = useWatch({ control, name: "complete" });
+
   useEffect(() => {
     if (task) {
       reset({
         id: task.id,
         text: task.text,
         description: task.description,
+        complete: task.complete,
         status: task.status,
         priority: task.priority,
         // TODO: figure out optimal way to do this, at first, I ended up using defaultValue for now on the field. But kept having issues with validation...would have to use coerce, ended up parsing/formatting depending on where we are
@@ -195,9 +198,15 @@ const TaskModal = ({
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
                 <span className="w-8 text-center">
-                  <input type="checkbox" />
+                  <input type="checkbox" {...register("complete")} />
                 </span>
-                <input type="text" {...register("text")} />
+                <input
+                  type="text"
+                  {...register("text")}
+                  className={clsx("", {
+                    "line-through": isComplete,
+                  })}
+                />
               </div>
               <div className="flex items-center gap-3">
                 <label
@@ -249,11 +258,16 @@ const TaskModal = ({
                   <span>Status</span>
                 </label>
                 <select id="status" {...register("status")}>
-                  {StatusOptions.map((status) => (
-                    <option key={status.code} value={status.code}>
-                      {status.label}
-                    </option>
-                  ))}
+                  <option value={TaskStatus.NOT_STARTED}>Not Started</option>
+                  <option value={TaskStatus.IN_PROGRESS}>In progress</option>
+                  <option value={TaskStatus.BLOCKED_WAITING}>
+                    Blocked/Waiting
+                  </option>
+                  <option value={TaskStatus.COMPLETE}>Complete</option>
+                  <option
+                    value={TaskStatus.COMPLETE_WAITING_ON_NEXT_RECURRENCE}>
+                    Complete, will reoccur
+                  </option>
                 </select>
               </div>
               <div className="flex items-center gap-2">
