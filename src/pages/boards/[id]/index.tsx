@@ -13,12 +13,13 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDebounce } from "usehooks-ts";
 import BucketComponent from "~/components/boards/BucketComponent";
 import NewBucket from "~/components/boards/NewBucket";
 import Loading from "~/components/shared/Loading";
 import TaskCard from "~/components/tasks/TaskCard";
+import TaskModal from "~/components/tasks/TaskModal";
 import { api } from "~/utils/api";
 
 import {
@@ -70,6 +71,7 @@ const BoardView = () => {
         <BucketComponent
           isOverlay
           bucket={findBucketById(activeDraggable.id, board)}
+          handleTaskSelected={handleTaskSelected}
         />
       );
     } else if (activeDraggable.type === "Task") {
@@ -245,6 +247,23 @@ const BoardView = () => {
     setActiveDraggable(null);
   };
 
+  // modal stuff
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [taskId, setTaskId] = useState("");
+
+  const handleTaskSelected = (taskId: string) => {
+    setTaskId(taskId);
+    setShowTaskModal(true);
+  };
+
+  useEffect(() => {
+    if (showTaskModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [showTaskModal]);
+
   return (
     <>
       <div className="flex items-center justify-between gap-4 p-2">
@@ -260,40 +279,52 @@ const BoardView = () => {
 
       {isLoading && <Loading />}
       {!isLoading && board && (
-        <div className="flex flex-nowrap gap-4 overflow-y-scroll p-4 pr-12">
-          <DndContext
-            sensors={[mouseSensor, touchSensor]}
-            // TODO: not sure what the collision or measuring is doing, only reason I
-            // removed them is when moving buckets if a shorter bucket was dragged over
-            // another taller bucket it didn't always detect that the item was being
-            // dragged over it so I removed for now
-            // collisionDetection={closestCenter}
-            // measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnd={handleDragEnd}
-            onDragCancel={handleDragCancel}>
-            <SortableContext
-              items={board.buckets}
-              // TODO: not sure what strategy does, keeping for now...
-              strategy={horizontalListSortingStrategy}>
-              {board.buckets.map((bucket) => (
-                <BucketComponent key={bucket.id} bucket={bucket} />
-              ))}
-            </SortableContext>
-            {/* the overlay is a clone of what you actually click to drag, 
+        <>
+          <div className="flex flex-nowrap gap-4 overflow-y-scroll p-4 pr-12">
+            <DndContext
+              sensors={[mouseSensor, touchSensor]}
+              // TODO: not sure what the collision or measuring is doing, only reason I
+              // removed them is when moving buckets if a shorter bucket was dragged over
+              // another taller bucket it didn't always detect that the item was being
+              // dragged over it so I removed for now
+              // collisionDetection={closestCenter}
+              // measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}>
+              <SortableContext
+                items={board.buckets}
+                // TODO: not sure what strategy does, keeping for now...
+                strategy={horizontalListSortingStrategy}>
+                {board.buckets.map((bucket) => (
+                  <BucketComponent
+                    key={bucket.id}
+                    bucket={bucket}
+                    handleTaskSelected={handleTaskSelected}
+                  />
+                ))}
+              </SortableContext>
+              {/* the overlay is a clone of what you actually click to drag, 
                   dropAnimation isn't necessary it just makes things 'snap' 
                   into place more quickly and smoothly than out of box */}
-            <DragOverlay
-              dropAnimation={{
-                duration: 150,
-                easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
-              }}>
-              {renderDraggable()}
-            </DragOverlay>
-          </DndContext>
-          <NewBucket board={board} />
-        </div>
+              <DragOverlay
+                dropAnimation={{
+                  duration: 150,
+                  easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",
+                }}>
+                {renderDraggable()}
+              </DragOverlay>
+            </DndContext>
+            <NewBucket board={board} />
+          </div>
+          <TaskModal
+            isOpen={showTaskModal}
+            close={() => setShowTaskModal(false)}
+            taskId={taskId}
+            boardId={board.id}
+          />
+        </>
       )}
     </>
   );

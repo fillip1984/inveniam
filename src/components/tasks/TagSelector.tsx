@@ -110,7 +110,7 @@ const TagSelector = ({
 
       {/* available tags, show selection of options */}
       {tagSearchBackdropVisible && availableTagsGivenSearch.length > 0 && (
-        <div className="absolute left-0 right-0 z-[999] rounded  bg-white p-2 shadow">
+        <div className="absolute left-0 right-0 z-[999] rounded border-2 border-accent bg-white p-2 text-black shadow">
           <div className="flex flex-col gap-1">
             {availableTagsGivenSearch.map((available) => (
               <span
@@ -126,11 +126,12 @@ const TagSelector = ({
 
       {/* no available tags, offer to create one */}
       {tagSearch.trim().length > 1 && availableTagsGivenSearch.length === 0 && (
-        <div className="absolute left-0 right-0 z-[999] w-full rounded border bg-white p-2 shadow">
+        <div className="absolute left-0 right-0 z-[999] w-full rounded border-2 border-accent bg-white p-2 shadow">
           <div className="z-[999] flex flex-col items-center gap-1">
             No available tags... create new tag?
             <div className="flex gap-1">
               <button
+                type="button"
                 onClick={handleCreateTag}
                 className="rounded bg-primary px-4 py-2">
                 Create

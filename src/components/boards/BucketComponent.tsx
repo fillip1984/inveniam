@@ -5,20 +5,20 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
 import { PiDotsSixBold } from "react-icons/pi";
 import { api } from "~/utils/api";
 import { type BucketAndEverything, type DraggableData } from "~/utils/types";
 import TaskCard from "../tasks/TaskCard";
-import TaskModal from "../tasks/TaskModal";
 import NewTask from "./NewTask";
 
 const BucketComponent = ({
   bucket,
   isOverlay,
+  handleTaskSelected,
 }: {
   bucket: BucketAndEverything;
   isOverlay?: boolean;
+  handleTaskSelected: (id: string) => void;
 }) => {
   // use a useEffect or useMemo and log out the values to observe what is happening if you want to see for yourself
   // attributes adds a role of button to the draggable item, and possibly aria hints, what I can tell the button causes the cursor to become cursor-pointer, otherwise not so necessary unless supporting screen readers
@@ -59,23 +59,6 @@ const BucketComponent = ({
   const handleDeleteBucket = () => {
     removeBucket.mutate({ bucketId: bucket.id });
   };
-
-  // modal stuff
-  const [showTaskModal, setShowTaskModal] = useState(false);
-  const [taskId, setTaskId] = useState("");
-
-  const handleTaskSelected = (taskId: string) => {
-    setTaskId(taskId);
-    setShowTaskModal(true);
-  };
-
-  useEffect(() => {
-    if (showTaskModal) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-  }, [showTaskModal]);
 
   return (
     <div ref={setNodeRef} style={style}>
@@ -123,13 +106,6 @@ const BucketComponent = ({
           </div>
         </div>
       </div>
-
-      <TaskModal
-        isOpen={showTaskModal}
-        close={() => setShowTaskModal(false)}
-        taskId={taskId}
-        boardId={bucket.boardId}
-      />
     </div>
   );
 };
