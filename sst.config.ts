@@ -6,7 +6,7 @@ import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import { Tags } from "aws-cdk-lib/core";
 import { type SSTConfig } from "sst";
-import { NextjsSite } from "sst/constructs";
+import { Cron, NextjsSite } from "sst/constructs";
 export default {
   config(_input) {
     return {
@@ -36,8 +36,8 @@ export default {
        * To get emails a sendin' you will need to:
        * 1) have a domain already registered and setup (easiest if its Route53)
        * 2) add the following ses contructs from https://github.com/seeebiii/ses-verify-identities/tree/main
-       * 3) if you send the emails from your NextJs app, you'll need to add this permission to the lambda. 
-       *    To do that, you'll want to, go into IAM on aws console, click Roles (under Access management), 
+       * 3) if you send the emails from your NextJs app, you'll need to add the 'ses:SendEmail' permission to the lambda running your nextjs server. 
+       *    To do that, you'll want to go into IAM on aws console, click Roles (under Access management), 
        *    search for the resource that's sending emails. Kknowing which resource to add the permission to can be tricky. 
        *    If you're having trouble you can test sending emails from your application and search through the logs on aws (either by tailing or cloud watch). 
        *    You're looking for someting like: AccessDenied: User `arn:aws:...' is not authorized to perform `ses:SendEmail' on resource `arn:aws:...:identity/email you verified.com'.
@@ -66,6 +66,19 @@ export default {
 
       new VerifySesEmailAddress(stack, "SesEmailVerification", {
         emailAddress: "fillip1984@gmail.com",
+      });
+
+      // Schedules a lambda cron job to run everyday at 11:30AM (7:30AM Eastern)
+      // I put the runtime as nodejs18 otherwise fetch wasn't available (should probably learn SQS or SES to trigger events instead of REST call to nextjs server)
+      //See: https://docs.sst.dev/constructs/Function
+      new Cron(stack, "status-report-email-cron", {
+        schedule: "cron(30 11 * * ? *)",
+        job: {
+          function: {
+            runtime: "nodejs18.x",
+            handler: "functions/emailStatusReport.handler",
+          },
+        },
       });
 
       // TODO: Should switch to storing in aws Secrets but haven't spent the time figuring out how to get it back out for primsa. See: https://docs.sst.dev/config#overview

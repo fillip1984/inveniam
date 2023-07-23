@@ -1,19 +1,19 @@
-import { toast } from "react-hot-toast";
 import { BsFillSendFill } from "react-icons/bs";
 import { api } from "~/utils/api";
 
 export default function StatusReport() {
-  const { data: status } = api.tasks.status.useQuery();
+  const { data: status } = api.tasks.status.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
-  const { mutate: sendEmail } = api.tasks.sendReportEmail.useMutation({
-    onSuccess: () => {
-      toast.success("Status report email sent");
-    },
+  const { refetch } = api.tasks.sendReportEmail.useQuery(undefined, {
+    enabled: false,
+    refetchOnWindowFocus: false,
   });
 
   const handleSendEmail = () => {
-    console.log("testing email");
-    sendEmail();
+    console.log("Sending status emails");
+    void refetch();
   };
 
   return (

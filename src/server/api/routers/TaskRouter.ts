@@ -17,7 +17,7 @@ import {
   taskPositionUpdate,
   type StatusReportType,
 } from "~/utils/types";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const uploadsDir = process.cwd() + "/public/uploads";
 
@@ -280,59 +280,84 @@ export const TaskRouter = createTRPCRouter({
     const result = generateStatusReport(ctx.session.user.id);
     return result;
   }),
-  sendReportEmail: protectedProcedure.mutation(async ({ ctx }) => {
-    try {
-      console.log("sending email");
-      const status = await generateStatusReport(ctx.session.user.id);
-
-      const email = renderStatusReportEmail(status);
-      if (!email) {
-        throw new Error("failed to render email content");
-      }
-
-      const client = new SESClient({
-        region: "us-east-1",
-      });
-      const input = {
-        Source: "inveniam@illizen.com",
-        Destination: {
-          ToAddresses: ["fillip1984@gmail.com"],
-          // CcAddresses: ["STRING_VALUE"],
-          // BccAddresses: ["STRING_VALUE"],
-        },
-        Message: {
-          Subject: {
-            Data: `Status for ${format(new Date(), "EEEE (M/dd)")}`,
+  sendReportEmail: publicProcedure
+    // .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx }) => {
+      const users = await ctx.prisma.user.findMany();
+      for (const user of users) {
+        if (!user.email) {
+          throw new Error(
+            "Unable to check if user has been invited due to user not having an email value"
+          );
+        }
+        const invitation = await ctx.prisma.invitation.findFirst({
+          where: {
+            email: user.email,
           },
-          Body: {
-            Html: {
-              Data: email,
+        });
+        if (
+          invitation?.enabled &&
+          invitation.email !== "fillip1984@gmail.com"
+        ) {
+          console.warn(
+            "Invitation is either not enabled or email has not verified by aws ses so no report sent"
+          );
+          continue;
+        }
+        try {
+          console.log("sending email");
+
+          const status = await generateStatusReport(user.id);
+
+          const email = renderStatusReportEmail(status);
+          if (!email) {
+            throw new Error("failed to render email content");
+          }
+
+          const client = new SESClient({
+            region: "us-east-1",
+          });
+          const emailOptions = {
+            Source: "inveniam@illizen.com",
+            Destination: {
+              ToAddresses: ["fillip1984@gmail.com"],
+              // CcAddresses: ["STRING_VALUE"],
+              // BccAddresses: ["STRING_VALUE"],
             },
-          },
-        },
-        // ReplyToAddresses: ["STRING_VALUE"],
-        // ReturnPath: "STRING_VALUE",
-        // SourceArn: "STRING_VALUE",
-        // ReturnPathArn: "STRING_VALUE",
-        // Tags: [
-        // MessageTagList
-        // {
-        // MessageTag
-        // Name: "STRING_VALUE", // required
-        // Value: "STRING_VALUE", // required
-        // },
-        // ],
-        // ConfigurationSetName: "STRING_VALUE",
-      };
-      const command = new SendEmailCommand(input);
-      await client.send(command);
+            Message: {
+              Subject: {
+                Data: `Status for ${format(new Date(), "EEEE (M/dd)")}`,
+              },
+              Body: {
+                Html: {
+                  Data: email,
+                },
+              },
+            },
+            // ReplyToAddresses: ["STRING_VALUE"],
+            // ReturnPath: "STRING_VALUE",
+            // SourceArn: "STRING_VALUE",
+            // ReturnPathArn: "STRING_VALUE",
+            // Tags: [
+            // MessageTagList
+            // {
+            // MessageTag
+            // Name: "STRING_VALUE", // required
+            // Value: "STRING_VALUE", // required
+            // },
+            // ],
+            // ConfigurationSetName: "STRING_VALUE",
+          };
+          const command = new SendEmailCommand(emailOptions);
+          await client.send(command);
 
-      return "sucess";
-    } catch (e) {
-      console.error("sending email error", e);
-      return e;
-    }
-  }),
+          return "success";
+        } catch (e) {
+          console.error("sending email error", e);
+          return e;
+        }
+      }
+    }),
 });
 
 const generateStatusReport = async (userId: string) => {
