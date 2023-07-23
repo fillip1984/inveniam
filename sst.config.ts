@@ -3,6 +3,7 @@ import {
   VerifySesEmailAddress,
 } from "@seeebiii/ses-verify-identities";
 import * as acm from "aws-cdk-lib/aws-certificatemanager";
+import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import { Tags } from "aws-cdk-lib/core";
 import { type SSTConfig } from "sst";
@@ -36,7 +37,8 @@ export default {
        * To get emails a sendin' you will need to:
        * 1) have a domain already registered and setup (easiest if its Route53)
        * 2) add the following ses contructs from https://github.com/seeebiii/ses-verify-identities/tree/main
-       * 3) if you send the emails from your NextJs app, you'll need to add the 'ses:SendEmail' permission to the lambda running your nextjs server. 
+       * 3) use attachPermissions (see 'send email iam change' below for how I've accomplished this within SST. Otherwise the rest of step 3 is how to do it manually)
+       *    Manually: if you send the emails from your NextJs app, you'll need to add the 'ses:SendEmail' permission to the lambda running your nextjs server. 
        *    To do that, you'll want to go into IAM on aws console, click Roles (under Access management), 
        *    search for the resource that's sending emails. Kknowing which resource to add the permission to can be tricky. 
        *    If you're having trouble you can test sending emails from your application and search through the logs on aws (either by tailing or cloud watch). 
@@ -140,6 +142,15 @@ export default {
           NEXTAUTH_GOOGLE_CLIENT_SECRET,
         },
       });
+
+      // send email iam change allows for NextJS to be able to send emails
+      site.attachPermissions([
+        new PolicyStatement({
+          actions: ["ses:SendEmail"],
+          effect: Effect.ALLOW,
+          resources: ["*"],
+        }),
+      ]);
 
       stack.addOutputs({
         SiteUrl: site.customDomainUrl || site.url,
