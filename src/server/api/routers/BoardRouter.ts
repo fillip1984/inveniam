@@ -72,11 +72,13 @@ export const BoardRouter = createTRPCRouter({
                           {
                             text: {
                               contains: textContains,
+                              mode: "insensitive",
                             },
                           },
                           {
                             description: {
                               contains: textContains,
+                              mode: "insensitive",
                             },
                           },
                         ],
@@ -86,11 +88,13 @@ export const BoardRouter = createTRPCRouter({
                           {
                             text: {
                               contains: textContains,
+                              mode: "insensitive",
                             },
                           },
                           {
                             description: {
                               contains: textContains,
+                              mode: "insensitive",
                             },
                           },
                         ],
