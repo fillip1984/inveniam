@@ -1,6 +1,5 @@
 export async function handler() {
   try {
-    console.log("cron job - triggering status report email");
     const sendEmailRequest = await fetch(
       "https://inveniam.illizen.com/api/trpc/tasks.sendReportEmail"
     );
@@ -14,9 +13,7 @@ export async function handler() {
       return;
     }
 
-    const response = await sendEmailRequest.text();
-
-    console.log("cron job - triggered status report email", response);
+    await sendEmailRequest.text();
   } catch (e) {
     console.error(
       "Error thrown while attempting to trigger status report email",

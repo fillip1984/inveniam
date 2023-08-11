@@ -14,6 +14,7 @@ import {
 } from "@dnd-kit/sortable";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { FaSearchengin } from "react-icons/fa";
 import { useDebounce } from "usehooks-ts";
 import BucketComponent from "~/components/boards/BucketComponent";
 import NewBucket from "~/components/boards/NewBucket";
@@ -79,7 +80,7 @@ const BoardView = () => {
         <TaskCard isOverlay task={findTaskById(activeDraggable.id, board)} />
       );
     } else {
-      console.log("Unsupported draggable");
+      console.warn("Unsupported draggable");
     }
   };
 
@@ -102,7 +103,7 @@ const BoardView = () => {
     const draggableData = e.active.data.current as DraggableData;
 
     if (!draggableData) {
-      console.log("did something go wrong, we do not have draggable data");
+      console.warn("did something go wrong, we do not have draggable data");
       setActiveDraggable(null);
     }
 
@@ -114,7 +115,7 @@ const BoardView = () => {
     } else if (draggableData.type === "Task") {
       setActiveDraggable(draggableData);
     } else {
-      console.log("Unsupported draggable");
+      console.warn("Unsupported draggable");
     }
   };
 
@@ -268,13 +269,18 @@ const BoardView = () => {
     <>
       <div className="flex items-center justify-between gap-4 p-2">
         <h4>{board?.name}</h4>
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search for tasks on this board..."
-          className="w-1/2"
-        />
+        <div className="flex flex-1 items-center justify-end gap-1">
+          <button type="button" className="rounded-lg bg-primary p-2 text-xl">
+            <FaSearchengin />
+          </button>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search for tasks on this board..."
+            className="md:w-2/3 lg:w-1/2"
+          />
+        </div>
       </div>
 
       {isLoading && <Loading />}

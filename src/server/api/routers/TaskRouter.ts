@@ -207,7 +207,6 @@ export const TaskRouter = createTRPCRouter({
       }
 
       //date time adjustments
-      console.log(input.startDate, input.dueDate);
       if (input.startDate) {
         input.startDate = zonedTimeToUtc(input.startDate, "America/New_York");
       } else {
@@ -219,7 +218,7 @@ export const TaskRouter = createTRPCRouter({
       } else {
         input.dueDate = null;
       }
-      console.log(
+      console.warn(
         "adjusted to hardcoded timezone! America/New_York, should pull from user's location or preferences",
         input.startDate,
         input.dueDate
@@ -305,8 +304,6 @@ export const TaskRouter = createTRPCRouter({
           continue;
         }
         try {
-          console.log("sending email");
-
           const status = await generateStatusReport(user.id);
 
           const email = renderStatusReportEmail(status);

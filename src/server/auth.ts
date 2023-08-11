@@ -67,7 +67,7 @@ const isInvited = async ({
   }
 
   if (account.provider === "credentials") {
-    console.log("credentials were provided so they are already invited");
+    // console.log("credentials were provided so they are already invited");
     return true;
   }
 
@@ -172,7 +172,6 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     signIn: isInvited,
     session: async ({ session }) => {
-      console.log("session", session);
       const freshUser = await prisma.user.findFirst({
         where: {
           email: session.user.email,
@@ -278,6 +277,5 @@ export const getServerAuthSession = (ctx: {
   req: GetServerSidePropsContext["req"];
   res: GetServerSidePropsContext["res"];
 }) => {
-  console.log("getting server session");
   return getServerSession(ctx.req, ctx.res, authOptions);
 };

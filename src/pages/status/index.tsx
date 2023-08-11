@@ -20,7 +20,7 @@ export default function StatusReport() {
         error: "Something went wrong",
       })
       .catch(() =>
-        console.log("An error occurred while attempting to send status email")
+        console.error("An error occurred while attempting to send status email")
       );
   };
 
