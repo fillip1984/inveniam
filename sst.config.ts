@@ -7,7 +7,7 @@ import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import { Tags } from "aws-cdk-lib/core";
 import { type SSTConfig } from "sst";
-import { Cron, NextjsSite } from "sst/constructs";
+import { Bucket, Cron, NextjsSite } from "sst/constructs";
 export default {
   config(_input) {
     return {
@@ -16,7 +16,7 @@ export default {
     };
   },
   stacks(app) {
-    Tags.of(app).add("inveniam", `${app.stage}-${app.region}`);
+    Tags.of(app).add(app.name, `${app.stage}-${app.region}`);
 
     app.stack(function Site({ stack }) {
       const hostedZone = route53.HostedZone.fromLookup(stack, "HostedZone", {
@@ -27,11 +27,16 @@ export default {
         stack,
         "Certificate",
         {
-          domainName: "inveniam.illizen.com",
+          domainName: `${app.name}.illizen.com`,
           hostedZone,
           region: "us-east-1",
         }
       );
+
+      //S3 bucket for attachment storage
+      const bucket = new Bucket(stack, `${app.name}-attachment-storage`, {
+        blockPublicACLs: true,
+      });
 
       /*
        * To get emails a sendin' you will need to:
@@ -125,13 +130,14 @@ export default {
 
       const site = new NextjsSite(stack, "site", {
         customDomain: {
-          domainName: "inveniam.illizen.com",
-          domainAlias: "www.inveniam.illizen.com",
+          domainName: `${app.name}.illizen.com`,
+          domainAlias: `www.${app.name}.illizen.com`,
           cdk: {
             hostedZone,
             certificate,
           },
         },
+        bind: [bucket],
         environment: {
           DATABASE_URL,
           NEXTAUTH_SECRET,
