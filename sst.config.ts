@@ -35,7 +35,7 @@ export default {
 
       //S3 bucket for attachment storage
       const bucket = new Bucket(stack, `${app.name}-attachment-storage`, {
-        blockPublicACLs: true,
+        // blockPublicACLs: true,
       });
 
       /*

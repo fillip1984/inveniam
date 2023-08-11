@@ -1,4 +1,5 @@
 import {
+  type S3StoredObject,
   type Attachment,
   type Board,
   type Bucket,
@@ -56,7 +57,7 @@ export type TaskAndEverything = Task & {
     tag: Tag;
   })[];
   comments: Comment[];
-  attachments: Attachment[];
+  attachments: (Attachment & { link: S3StoredObject })[];
 };
 
 export type BoardFormSchemaType = z.infer<typeof boardFormSchema>;

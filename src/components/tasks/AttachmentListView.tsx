@@ -1,6 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
 import { format } from "date-fns";
-import Image from "next/image";
 import { useState, type ChangeEvent } from "react";
 import {
   type FieldArrayWithId,
@@ -109,7 +108,7 @@ const AttachmentListView = ({
             )}
 
             {attachment.link && (
-              <Image
+              <img
                 height={150}
                 width={150}
                 src={attachment.link.url}
@@ -128,7 +127,7 @@ const AttachmentListView = ({
       </div>
 
       <div className="my-2 flex flex-col gap-2">
-        {/* <input type="file" value={file} onChange={handleFileChange} /> */}
+        <input type="file" onChange={handleFileChange} />
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -137,7 +136,7 @@ const AttachmentListView = ({
       </div>
       <button
         type="button"
-        // onClick={handleAttachment}
+        onClick={() => void handleAttachment()}
         className="rounded bg-accent px-4 py-2">
         Attach
       </button>

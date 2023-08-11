@@ -12,7 +12,6 @@ import {
   startOfWeek,
 } from "date-fns";
 import { utcToZonedTime, zonedTimeToUtc } from "date-fns-tz";
-import fs from "fs";
 import { z } from "zod";
 import { renderStatusReportEmail } from "~/email/EmailTemplates";
 import { prisma } from "~/server/db";
@@ -66,7 +65,11 @@ export const TaskRouter = createTRPCRouter({
             },
           },
           comments: true,
-          attachments: true,
+          attachments: {
+            include: {
+              link: true,
+            },
+          },
           bucket: {
             select: {
               name: true,
@@ -81,48 +84,51 @@ export const TaskRouter = createTRPCRouter({
   update: protectedProcedure
     .input(taskFormSchema)
     .mutation(async ({ ctx, input }) => {
-      // if (input.attachments[0]) {
-      //   const dataUrl = input.attachments[0].imageData_Base64Encoded as string;
-      //   const data = dataUrl.split(",")[1] as string;
-      //   const buffer = Buffer.from(data, "base64");
-      //   asdf;
-      // }
+      const freshAttachments = await ctx.prisma.attachment.findMany({
+        where: { taskId: input.id },
+      });
+      const freshAttachmentIds = freshAttachments.map((a) => a.id);
+      const currentAttachmentIds = input.attachments.map(
+        (a) => a.id
+      ) as string[];
+      const attachmentDeletes = freshAttachmentIds.filter(
+        (a) => !currentAttachmentIds.includes(a)
+      );
+      await ctx.prisma.attachment.deleteMany({
+        where: {
+          id: {
+            in: attachmentDeletes,
+          },
+        },
+      });
+      const attachmentAdds = currentAttachmentIds.filter(
+        (a) => !freshAttachmentIds.includes(a)
+      );
+      for (const attachmentId of attachmentAdds) {
+        const attachment = input.attachments.find((a) => a.id === attachmentId);
+        if (!attachment) {
+          throw new Error("Unable to find attachment by id: " + attachmentId);
+        }
 
-      // const freshAttachments = await ctx.prisma.attachment.findMany({
-      //   where: { taskId: input.id },
-      // });
-      // const freshAttachmentIds = freshAttachments.map((a) => a.id);
-      // const currentAttachmentIds = input.attachments.map(
-      //   (a) => a.id
-      // ) as string[];
-      // const attachmentDeletes = freshAttachmentIds.filter(
-      //   (a) => !currentAttachmentIds.includes(a)
-      // );
-      // await ctx.prisma.attachment.deleteMany({
-      //   where: {
-      //     id: {
-      //       in: attachmentDeletes,
-      //     },
-      //   },
-      // });
-      // const attachmentAdds = currentAttachmentIds.filter(
-      //   (a) => !freshAttachmentIds.includes(a)
-      // );
-      // for (const attachmentId of attachmentAdds) {
-      //   const attachment = input.attachments.find((a) => a.id === attachmentId);
-      //   if (!attachment) {
-      //     throw new Error("Unable to find attachment by id: " + attachmentId);
-      //   }
-      // await ctx.prisma.attachment.create({
-      //   data: {
-      //     text: attachment.text,
-      //     added: attachment.added,
-      //     taskId: input.id,
-      //     // location: `/uploads/test.jpg`,
-      //     userId: ctx.session.user.id,
-      //   },
-      // });
-      // }
+        const link = await ctx.prisma.s3StoredObject.create({
+          data: {
+            url: attachment.link.url,
+            bucketName: attachment.link.bucketName,
+            key: attachment.link.key,
+            userId: ctx.session.user.id,
+          },
+        });
+
+        await ctx.prisma.attachment.create({
+          data: {
+            text: attachment.text,
+            added: attachment.added,
+            taskId: input.id,
+            linkId: link.id,
+            userId: ctx.session.user.id,
+          },
+        });
+      }
 
       const freshTaskTagList = await ctx.prisma.taskTags.findMany({
         where: { taskId: input.id },

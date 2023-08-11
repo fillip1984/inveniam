@@ -8,7 +8,6 @@ import {
   useForm,
   useWatch,
   type SubmitHandler,
-  type FieldArrayWithId,
 } from "react-hook-form";
 import { BsChatSquareTextFill } from "react-icons/bs";
 import { CiMemoPad } from "react-icons/ci";
@@ -133,23 +132,7 @@ const TaskModal = ({
   });
 
   const onSubmit: SubmitHandler<TaskFormSchemaType> = (formData) => {
-    console.log("saving task");
-    attachments.forEach((attachment) => {
-      console.log("attachment", attachment);
-      if (!attachment.link) {
-        console.log("need to upload attachment");
-      }
-    });
-    // updateTask({ ...formData });
-  };
-
-  const uploadAttachment = (
-    attachment: FieldArrayWithId<TaskFormSchemaType, "attachments", "id">
-  ) => {
-    console.log("Uploading attachment");
-    if (!attachment.imageData_Base64Encoded) {
-      throw new Error("Unable to upload photo, file is undefined");
-    }
+    updateTask({ ...formData });
   };
 
   const { mutate: deleteTask } = api.tasks.delete.useMutation({

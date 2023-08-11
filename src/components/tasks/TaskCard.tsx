@@ -2,7 +2,6 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import clsx from "clsx";
 import { format, isAfter, startOfDay } from "date-fns";
-import Image from "next/image";
 import { BsChatSquareTextFill } from "react-icons/bs";
 import { FaCalendarDay, FaList, FaPaperclip } from "react-icons/fa";
 import { yyyyMMddHyphenated } from "~/utils/dateUtils";
@@ -68,16 +67,16 @@ const TaskCard = ({
           })}>
           {task.text}
         </p>
-        {/* {task.attachments.length > 0 && task.attachments[0]?.location && (
-          <Image
+        {task.attachments.length > 0 && task.attachments[0]?.link && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             height={150}
             width={150}
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            src={task.attachments[0].location}
+            src={task.attachments[0].link.url}
             alt="Preview"
             className="mx-auto bg-white"
           />
-        )} */}
+        )}
 
         {(task.dueDate ||
           task.attachments.length > 0 ||

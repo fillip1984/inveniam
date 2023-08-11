@@ -120,6 +120,9 @@ export const BoardRouter = createTRPCRouter({
                     },
                   },
                   attachments: {
+                    include: {
+                      link: true,
+                    },
                     orderBy: {
                       createdAt: "asc",
                     },
