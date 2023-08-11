@@ -68,7 +68,7 @@ const TaskCard = ({
           })}>
           {task.text}
         </p>
-        {task.attachments.length > 0 && task.attachments[0]?.location && (
+        {/* {task.attachments.length > 0 && task.attachments[0]?.location && (
           <Image
             height={150}
             width={150}
@@ -77,7 +77,7 @@ const TaskCard = ({
             alt="Preview"
             className="mx-auto bg-white"
           />
-        )}
+        )} */}
 
         {(task.dueDate ||
           task.attachments.length > 0 ||

@@ -8,6 +8,7 @@ import {
   useForm,
   useWatch,
   type SubmitHandler,
+  type FieldArrayWithId,
 } from "react-hook-form";
 import { BsChatSquareTextFill } from "react-icons/bs";
 import { CiMemoPad } from "react-icons/ci";
@@ -18,6 +19,7 @@ import {
   FaEllipsisV,
   FaFlag,
   FaList,
+  FaPaperclip,
   // FaPaperclip,
   FaTag,
 } from "react-icons/fa";
@@ -30,6 +32,7 @@ import {
   type TaskFormSchemaType,
 } from "~/utils/types";
 // import AttachmentListView from "./AttachmentListView";
+import AttachmentListView from "./AttachmentListView";
 import CheckListView from "./CheckListView";
 import CommentListView from "./CommentListView";
 import TagSelector from "./TagSelector";
@@ -38,12 +41,10 @@ const TaskModal = ({
   isOpen,
   close,
   taskId,
-  boardId,
 }: {
   isOpen: boolean;
   close: () => void;
   taskId: string;
-  boardId: string;
 }) => {
   const { data: task } = api.tasks.readOne.useQuery(
     { taskId },
@@ -132,7 +133,23 @@ const TaskModal = ({
   });
 
   const onSubmit: SubmitHandler<TaskFormSchemaType> = (formData) => {
-    updateTask({ ...formData });
+    console.log("saving task");
+    attachments.forEach((attachment) => {
+      console.log("attachment", attachment);
+      if (!attachment.link) {
+        console.log("need to upload attachment");
+      }
+    });
+    // updateTask({ ...formData });
+  };
+
+  const uploadAttachment = (
+    attachment: FieldArrayWithId<TaskFormSchemaType, "attachments", "id">
+  ) => {
+    console.log("Uploading attachment");
+    if (!attachment.imageData_Base64Encoded) {
+      throw new Error("Unable to upload photo, file is undefined");
+    }
   };
 
   const { mutate: deleteTask } = api.tasks.delete.useMutation({
@@ -361,7 +378,7 @@ const TaskModal = ({
                 append={appendComment}
                 remove={removeComment}
               />
-              {/* <div className="my-2 flex items-center gap-2">
+              <div className="my-2 flex items-center gap-2">
                 <label className="flex items-center" />
                 <FaPaperclip className="text-2xl text-white" /> Attachments
                 <span className="text-white">
@@ -372,7 +389,7 @@ const TaskModal = ({
                 attachments={attachments}
                 append={appendAttachment}
                 remove={removeAttachment}
-              /> */}
+              />
             </div>
           </form>
         </div>

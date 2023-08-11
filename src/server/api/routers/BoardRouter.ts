@@ -188,6 +188,7 @@ export const BoardRouter = createTRPCRouter({
           name: input.bucketName,
           position: input.position,
           boardId: input.boardId,
+          userId: ctx.session.user.id,
         },
       });
 

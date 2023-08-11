@@ -1,3 +1,7 @@
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { Bucket } from "sst/node/bucket";
+
 import { SendEmailCommand, SESClient } from "@aws-sdk/client-ses"; // ES Modules import
 import {
   addDays,
@@ -15,11 +19,10 @@ import { prisma } from "~/server/db";
 import {
   taskFormSchema,
   taskPositionUpdate,
+  type S3PresignedUrlType,
   type StatusReportType,
 } from "~/utils/types";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
-
-const uploadsDir = process.cwd() + "/public/uploads";
 
 export const TaskRouter = createTRPCRouter({
   create: protectedProcedure
@@ -78,47 +81,48 @@ export const TaskRouter = createTRPCRouter({
   update: protectedProcedure
     .input(taskFormSchema)
     .mutation(async ({ ctx, input }) => {
-      if (input.attachments[0]) {
-        const dataUrl = input.attachments[0].imageData_Base64Encoded as string;
-        const data = dataUrl.split(",")[1] as string;
-        const buffer = Buffer.from(data, "base64");
-        fs.writeFileSync(`${uploadsDir}/test.jpg`, buffer);
-      }
+      // if (input.attachments[0]) {
+      //   const dataUrl = input.attachments[0].imageData_Base64Encoded as string;
+      //   const data = dataUrl.split(",")[1] as string;
+      //   const buffer = Buffer.from(data, "base64");
+      //   asdf;
+      // }
 
-      const freshAttachments = await ctx.prisma.attachment.findMany({
-        where: { taskId: input.id },
-      });
-      const freshAttachmentIds = freshAttachments.map((a) => a.id);
-      const currentAttachmentIds = input.attachments.map(
-        (a) => a.id
-      ) as string[];
-      const attachmentDeletes = freshAttachmentIds.filter(
-        (a) => !currentAttachmentIds.includes(a)
-      );
-      await ctx.prisma.attachment.deleteMany({
-        where: {
-          id: {
-            in: attachmentDeletes,
-          },
-        },
-      });
-      const attachmentAdds = currentAttachmentIds.filter(
-        (a) => !freshAttachmentIds.includes(a)
-      );
-      for (const attachmentId of attachmentAdds) {
-        const attachment = input.attachments.find((a) => a.id === attachmentId);
-        if (!attachment) {
-          throw new Error("Unable to find attachment by id: " + attachmentId);
-        }
-        await ctx.prisma.attachment.create({
-          data: {
-            text: attachment.text,
-            added: attachment.added,
-            taskId: input.id,
-            location: `/uploads/test.jpg`,
-          },
-        });
-      }
+      // const freshAttachments = await ctx.prisma.attachment.findMany({
+      //   where: { taskId: input.id },
+      // });
+      // const freshAttachmentIds = freshAttachments.map((a) => a.id);
+      // const currentAttachmentIds = input.attachments.map(
+      //   (a) => a.id
+      // ) as string[];
+      // const attachmentDeletes = freshAttachmentIds.filter(
+      //   (a) => !currentAttachmentIds.includes(a)
+      // );
+      // await ctx.prisma.attachment.deleteMany({
+      //   where: {
+      //     id: {
+      //       in: attachmentDeletes,
+      //     },
+      //   },
+      // });
+      // const attachmentAdds = currentAttachmentIds.filter(
+      //   (a) => !freshAttachmentIds.includes(a)
+      // );
+      // for (const attachmentId of attachmentAdds) {
+      //   const attachment = input.attachments.find((a) => a.id === attachmentId);
+      //   if (!attachment) {
+      //     throw new Error("Unable to find attachment by id: " + attachmentId);
+      //   }
+      // await ctx.prisma.attachment.create({
+      //   data: {
+      //     text: attachment.text,
+      //     added: attachment.added,
+      //     taskId: input.id,
+      //     // location: `/uploads/test.jpg`,
+      //     userId: ctx.session.user.id,
+      //   },
+      // });
+      // }
 
       const freshTaskTagList = await ctx.prisma.taskTags.findMany({
         where: { taskId: input.id },
@@ -171,6 +175,7 @@ export const TaskRouter = createTRPCRouter({
             text: comment.text,
             posted: comment.posted,
             taskId: input.id,
+            userId: ctx.session.user.id,
           },
         });
       }
@@ -202,6 +207,7 @@ export const TaskRouter = createTRPCRouter({
             text: item.text,
             complete: item.complete,
             taskId: input.id,
+            userId: ctx.session.user.id,
           },
         });
       }
@@ -218,11 +224,15 @@ export const TaskRouter = createTRPCRouter({
       } else {
         input.dueDate = null;
       }
-      console.warn(
-        "adjusted to hardcoded timezone! America/New_York, should pull from user's location or preferences",
-        input.startDate,
-        input.dueDate
-      );
+
+      // TODO: stop hard coding timezone
+      if (input.startDate || input.dueDate) {
+        console.warn(
+          "adjusted to hardcoded timezone! America/New_York, should pull from user's location or preferences",
+          input.startDate,
+          input.dueDate
+        );
+      }
 
       const result = ctx.prisma.task.update({
         where: {
@@ -275,6 +285,36 @@ export const TaskRouter = createTRPCRouter({
 
       return result;
     }),
+  generateS3PresignedUrl: protectedProcedure.query(async ({ ctx }) => {
+    console.log(
+      "Generating S3 presigned url for user: ",
+      ctx.session.user.email
+    );
+
+    const bucketName = Bucket["inveniam-attachment-storage"].bucketName;
+    const key = crypto.randomUUID();
+
+    const command = new PutObjectCommand({
+      ACL: "public-read",
+      Key: key,
+      Bucket: bucketName,
+    });
+    const url = await getSignedUrl(new S3Client({}), command);
+
+    const presignedUrl: S3PresignedUrlType = {
+      url,
+      bucketName,
+      key,
+    };
+
+    // console.log(
+    //   "Generated S3 presigned url for user: ",
+    //   ctx.session.user,
+    //   "S3 presigned url: ",
+    //   url
+    // );
+    return presignedUrl;
+  }),
   status: protectedProcedure.query(async ({ ctx }) => {
     const result = generateStatusReport(ctx.session.user.id);
     return result;

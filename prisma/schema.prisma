@@ -62,17 +62,22 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    password      String?
-    accounts      Account[]
-    sessions      Session[]
-    boards        Board[]
-    tasks         Task[]
-    tags          Tag[]
+    id             String           @id @default(cuid())
+    name           String?
+    email          String?          @unique
+    emailVerified  DateTime?
+    image          String?
+    password       String?
+    accounts       Account[]
+    sessions       Session[]
+    boards         Board[]
+    tasks          Task[]
+    tags           Tag[]
+    Bucket         Bucket[]
+    Comment        Comment[]
+    CheckListItem  CheckListItem[]
+    Attachment     Attachment[]
+    S3StoredObject S3StoredObject[]
 }
 
 model VerificationToken {
@@ -100,8 +105,11 @@ model Bucket {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    name      String
-    position  Int //@unique //// TODO: https://stackoverflow.com/questions/75882073/prisma-update-two-items-switch-around-unique-constraint-on-index
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+
+    name     String
+    position Int //@unique //// TODO: https://stackoverflow.com/questions/75882073/prisma-update-two-items-switch-around-unique-constraint-on-index
 
     tasks   Task[]
     board   Board  @relation(fields: [boardId], references: [id])
@@ -166,8 +174,11 @@ model Comment {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    text      String
-    posted    DateTime
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+
+    text   String
+    posted DateTime
 
     task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
     taskId String
@@ -177,8 +188,11 @@ model CheckListItem {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    text      String
-    complete  Boolean  @default(false)
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+
+    text     String
+    complete Boolean @default(false)
 
     task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
     taskId String
@@ -188,12 +202,30 @@ model Attachment {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    text      String
-    added     DateTime
-    location  String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+
+    text   String
+    added  DateTime
+    link   S3StoredObject @relation(fields: [linkId], references: [id])
+    linkId String         @unique
 
     task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
     taskId String
+}
+
+model S3StoredObject {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id])
+    userId    String
+
+    url        String
+    bucketName String
+    key        String
+
+    Attachment Attachment?
 }
 
 enum TaskStatus {

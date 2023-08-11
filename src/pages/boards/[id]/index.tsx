@@ -328,7 +328,6 @@ const BoardView = () => {
             isOpen={showTaskModal}
             close={() => setShowTaskModal(false)}
             taskId={taskId}
-            boardId={board.id}
           />
         </>
       )}

@@ -12,6 +12,24 @@ import { parse } from "date-fns";
 import { z } from "zod";
 import { yyyyMMddHyphenated } from "./dateUtils";
 
+// s3 stuff
+export const s3StoredObject = z.object({
+  id: z.string().nullish(),
+  url: z.string(),
+  bucketName: z.string(),
+  key: z.string(),
+});
+
+export type S3StoredObjectType = z.infer<typeof s3StoredObject>;
+
+export const s3PresignedUrl = z.object({
+  url: z.string(),
+  bucketName: z.string(),
+  key: z.string(),
+});
+
+export type S3PresignedUrlType = z.infer<typeof s3PresignedUrl>;
+
 // short hand type stuff
 export type BoardSummary = {
   id: string;
@@ -112,7 +130,7 @@ export const taskFormSchema = z
         text: z.string(),
         added: z.date(),
         imageData_Base64Encoded: z.string().nullish(),
-        location: z.string().nullish(),
+        link: s3StoredObject,
       })
     ),
   })
