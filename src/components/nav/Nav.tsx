@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { FaSignOutAlt, FaSlidersH } from "react-icons/fa";
+import { FaSignOutAlt } from "react-icons/fa";
+import { FaGears } from "react-icons/fa6";
 import { GiTrail } from "react-icons/gi";
 import { HiDocumentReport } from "react-icons/hi";
 
@@ -39,15 +40,20 @@ const AvatarAndMenu = () => {
   };
 
   const menuItems = [
-    {
-      label: "Preferences",
-      icon: <FaSlidersH />,
-      action: () => void router.push("/preferences"),
-    },
+    // {
+    //   label: "Preferences",
+    //   icon: <FaSlidersH />,
+    //   action: () => void router.push("/preferences"),
+    // },
     {
       label: "Status Report",
       icon: <HiDocumentReport />,
       action: () => void router.push("/status"),
+    },
+    {
+      label: "Admin",
+      icon: <FaGears />,
+      action: () => void router.push("/admin"),
     },
     { label: "Sign out", icon: <FaSignOutAlt />, action: handleSignOut },
   ];
