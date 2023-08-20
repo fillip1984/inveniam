@@ -125,9 +125,9 @@ model Task {
 
     text        String
     description String?
-    complete    Boolean    @default(false)
-    status      TaskStatus @default(NOT_STARTED)
-    priority    String? //switch to enum after migrating to something other than SQLite
+    complete    Boolean         @default(false)
+    status      TaskStatus      @default(NOT_STARTED)
+    priority    PriorityOption?
     startDate   DateTime?
     dueDate     DateTime?
     position    Int
@@ -145,6 +145,14 @@ model Task {
 
     // TODO: https://stackoverflow.com/questions/75882073/prisma-update-two-items-switch-around-unique-constraint-on-index
     // @@unique([bucketId, position])
+}
+
+enum PriorityOption {
+    LOWEST
+    LOW
+    MEDIUM
+    HIGH
+    HIGHEST
 }
 
 model TaskTags {
@@ -166,6 +174,7 @@ model Tag {
 
     name        String
     description String?
+    color       String?
 
     tags TaskTags[]
 }
