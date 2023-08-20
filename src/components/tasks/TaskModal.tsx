@@ -26,7 +26,7 @@ import {
 import TextareaAutosize from "react-textarea-autosize";
 import { api } from "~/utils/api";
 import {
-  PriorityOptions,
+  PrioritySelections,
   taskFormSchema,
   type TaskFormSchemaType,
 } from "~/utils/types";
@@ -302,9 +302,11 @@ const TaskModal = ({
                 </label>
                 <select id="priority" {...register("priority")}>
                   <option value=""></option>
-                  {PriorityOptions.map((priority) => (
-                    <option key={priority.code} value={priority.code}>
-                      {priority.label}
+                  {PrioritySelections.map((prioritySelect) => (
+                    <option
+                      key={prioritySelect.value}
+                      value={prioritySelect.value}>
+                      {prioritySelect.label}
                     </option>
                   ))}
                 </select>
@@ -338,10 +340,12 @@ const TaskModal = ({
               <div className="my-2 flex items-center gap-2">
                 <label className="flex items-center" />
                 <FaList className="text-2xl text-white" /> Checklist
-                <span className="text-white">
-                  ({checklistState?.filter((item) => item.complete).length}/
-                  {checklistState?.length})
-                </span>
+                {checklistState && checklistState.length !== 0 && (
+                  <span className="text-white">
+                    ({checklistState?.filter((item) => item.complete).length}/
+                    {checklistState?.length})
+                  </span>
+                )}
               </div>
               <CheckListView
                 items={checklistItems}
