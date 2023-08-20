@@ -22,9 +22,11 @@ const TagSelector = ({
   const [tagSearchBackdropVisible, setTagSearchBackdropVisible] =
     useState(false);
 
+  const utils = api.useContext();
   const { mutate: createTag } = api.tags.create.useMutation({
     onSuccess: (newTag) => {
       append({ tag: newTag });
+      void utils.tags.invalidate();
       setTagSearch("");
       setTagSearchBackdropVisible(false);
     },
