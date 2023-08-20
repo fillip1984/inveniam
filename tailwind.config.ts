@@ -18,7 +18,7 @@ export default {
       black: "#1C0F13",
       white: "#fff",
       danger: "#EB4C7C",
-      danger2: "#EB4C7C",
+      calm: "hsl(262, 73%, 41%)",
       warning: "#F0E3B2",
     },
     extend: {},
