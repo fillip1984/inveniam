@@ -8,6 +8,7 @@ import {
   type Tag,
   type Task,
   type TaskTags,
+  PriorityOption,
 } from "@prisma/client";
 import { parse } from "date-fns";
 import { z } from "zod";
@@ -98,7 +99,7 @@ export const taskFormSchema = z
     description: z.string().nullish(),
     complete: z.boolean(),
     // status: z.nativeEnum(TaskStatus),
-    priority: z.string().nullish(),
+    priority: z.nativeEnum(PriorityOption).nullish(),
     startDate: z.date().or(z.string()).nullish(),
     dueDate: z.date().or(z.string()).nullish(),
     comments: z.array(
@@ -225,26 +226,30 @@ export type TagFormSchemaType = z.infer<typeof tagFormSchema>;
 //                   <TbExclamationCircle /> Overdue
 //                 </span>
 
-export type PriorityOption = {
+export type PrioritySelect = {
   label: string;
-  code: string;
+  value: PriorityOption;
 };
-export const PriorityOptions: PriorityOption[] = [
+export const PrioritySelections: PrioritySelect[] = [
+  {
+    label: "Lowest",
+    value: "LOWEST",
+  },
   {
     label: "Low",
-    code: "low",
+    value: "LOW",
   },
   {
     label: "Medium",
-    code: "medium",
+    value: "MEDIUM",
   },
   {
     label: "High",
-    code: "high",
+    value: "HIGH",
   },
   {
-    label: "Urgent",
-    code: "urgent",
+    label: "Highest",
+    value: "HIGHEST",
   },
 ];
 
