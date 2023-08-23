@@ -12,9 +12,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Nav />
-      <main className="overflow-hidden bg-black pt-16 text-white">
-        <Component {...pageProps} />
+      <main className="flex h-screen flex-col overflow-hidden bg-black text-white">
+        <Nav />
+        <div className="flex flex-1 overflow-hidden">
+          <Component {...pageProps} />
+        </div>
       </main>
       <Toaster />
     </SessionProvider>

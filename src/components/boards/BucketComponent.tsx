@@ -64,7 +64,7 @@ const BucketComponent = ({
     <div ref={setNodeRef} style={style}>
       <div
         className={clsx(
-          "relative max-h-[88vh] w-[350px] select-none overflow-y-auto rounded-lg border bg-primary",
+          "relative flex max-h-[85dvh] w-[85dvw] select-none flex-col overflow-hidden rounded-lg border bg-primary sm:w-[400px]",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-1 scale-105": isOverlay,
@@ -76,11 +76,11 @@ const BucketComponent = ({
           className="absolute left-1/2 text-xl text-white/60">
           <PiDotsSixBold />
         </div>
-        <div className="p-2">
-          <div className="mb-2 flex justify-between">
+        <div className="flex flex-1 flex-col overflow-hidden py-2">
+          <div className="mb-2 flex justify-between px-2">
             <div className="flex items-center gap-2">
               <h5>{bucket.name}</h5>
-              <span className="text-primary">{bucket.tasks.length}</span>
+              <span className="text-secondary">{bucket.tasks.length}</span>
             </div>
             <button
               onClick={handleDeleteBucket}
@@ -89,7 +89,7 @@ const BucketComponent = ({
             </button>
           </div>
           <NewTask bucket={bucket} />
-          <div className="mb-8 flex flex-col gap-2">
+          <div className="mb-4 flex flex-1 flex-col gap-2 overflow-y-auto px-4">
             <SortableContext
               items={bucket.tasks}
               // TODO: not sure what strategy does... keeping for now

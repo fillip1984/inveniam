@@ -164,7 +164,7 @@ const TaskModal = ({
         className="fixed inset-0 z-[998] bg-black/30 backdrop-blur"
       />
 
-      <div className="fixed inset-4 z-[999] mx-auto w-full max-w-[650px] overflow-hidden">
+      <div className="fixed inset-2 z-[999] mx-auto w-[95%] overflow-hidden sm:w-4/5">
         <div className="h-full rounded bg-primary">
           <div
             id="modal-header"

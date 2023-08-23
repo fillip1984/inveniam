@@ -10,7 +10,7 @@ import { HiDocumentReport } from "react-icons/hi";
 
 const Nav = () => {
   return (
-    <nav className="fixed left-0 right-0 top-0 z-[997] flex h-16 items-center justify-between bg-black/90 px-4 py-2">
+    <nav className="z-[997] flex h-16 items-center justify-between bg-black/90 px-2">
       <Link href="/">
         <h3 className="flex items-center gap-2 font-bold text-white">
           <GiTrail />
@@ -78,7 +78,7 @@ const AvatarAndMenu = () => {
               className={`absolute right-0 top-16 z-[999] w-44 rounded bg-white/90 backdrop-blur transition duration-300 ease-in-out ${
                 avatarMenuOpen ? "" : "hidden"
               }`}>
-              <div className="flex flex-col p-2">
+              <div className="flex flex-col rounded bg-primary p-2">
                 {menuItems.map((menuItem) => (
                   <button
                     type="button"

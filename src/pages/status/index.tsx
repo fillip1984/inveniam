@@ -25,7 +25,7 @@ export default function StatusReport() {
   };
 
   return (
-    <div className="mx-auto w-3/4 pt-2">
+    <div className="mx-auto flex h-full w-full flex-col items-center justify-center pt-2">
       {/* <h2>{format(new Date(), "EEEE (M/dd)")}</h2> */}
 
       <div className="flex justify-end">
@@ -38,7 +38,7 @@ export default function StatusReport() {
       </div>
 
       {status && (
-        <>
+        <div className="w-3/4 flex-1 overflow-y-scroll">
           <div className="mb-6">
             <h3 className="mb-2 font-bold">Totals</h3>
             <div className="flex w-full flex-wrap justify-center gap-2">
@@ -127,7 +127,7 @@ export default function StatusReport() {
               ))}
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

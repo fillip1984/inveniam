@@ -32,9 +32,7 @@ export default function Home() {
         <link rel="manifest" href="/site.webmanifest"></link>
       </Head>
 
-      <main className="h-[100vh] w-[100vw]">
-        {sessionData ? <SignedInView /> : <NotSignedInView />}
-      </main>
+      {sessionData ? <SignedInView /> : <NotSignedInView />}
     </>
   );
 }
@@ -68,8 +66,8 @@ const NotSignedInView = () => {
   }, [username, password]);
 
   return (
-    <div className="mx-auto flex h-screen w-[350px] flex-col items-center pt-8">
-      <div className="flex flex-col items-center gap-4 rounded-lg border-2 border-white/40 px-8 py-4">
+    <div className="flex w-full justify-center pt-12">
+      <div className="flex w-[380px] flex-col items-center gap-2">
         <h3 className="mb-2">Please sign in</h3>
 
         <button

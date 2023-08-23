@@ -86,7 +86,7 @@ const NewTask = ({ bucket }: { bucket: BucketAndEverything }) => {
   };
 
   return (
-    <div className="new-task mb-3">
+    <div className="new-task mb-3 px-2">
       <div className="flex">
         <input
           type="text"
