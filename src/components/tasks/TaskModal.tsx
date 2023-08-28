@@ -240,6 +240,7 @@ const TaskModal = ({
                 </label>
                 <TextareaAutosize
                   minRows={3}
+                  maxRows={10}
                   {...register("description")}
                   id="description"
                   rows={8}
