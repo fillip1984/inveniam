@@ -12,6 +12,7 @@ import {
   SortableContext,
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaSearchengin } from "react-icons/fa";
@@ -46,7 +47,7 @@ const BoardView = () => {
       id: id as string,
       search: debouncedValue,
     },
-    { enabled: !!id, refetchOnWindowFocus: false }
+    { enabled: !!id, refetchOnWindowFocus: false },
   );
 
   // const utils = api.useContext();
@@ -54,7 +55,7 @@ const BoardView = () => {
     {
       // TODO: not sure if we should be using this here...
       // onSuccess: () => utils.boards.invalidate(),
-    }
+    },
   );
   const { mutate: updateBucketPositions } =
     api.boards.updateBucketPositions.useMutation();
@@ -63,7 +64,7 @@ const BoardView = () => {
    * DND Stuff
    **************************************************/
   const [activeDraggable, setActiveDraggable] = useState<DraggableData | null>(
-    null
+    null,
   );
   const renderDraggable = () => {
     if (!activeDraggable || !board) {
@@ -215,7 +216,7 @@ const BoardView = () => {
       const originalPosition = bucket.position;
       const currentPosition = findBucketById(
         e.over.data.current.id as string,
-        board
+        board,
       ).position;
 
       // debugging
@@ -232,7 +233,7 @@ const BoardView = () => {
             id: bucket.id,
             position: bucket.position,
           };
-        }
+        },
       );
       updateBucketPositions({ buckets: bucketsToUpdate });
     }
@@ -266,12 +267,30 @@ const BoardView = () => {
     }
   }, [showTaskModal]);
 
+  const [quickSearchAnimations] = useAutoAnimate();
+  const [showQuickSearch, setShowQuickSearch] = useState(false);
+  const handleQuickSearchToggle = () => {
+    setShowQuickSearch((prev) => !prev);
+  };
+
+  const handleQuickSearchOverdue = () => {
+    setSearch("overdue:true");
+  };
+
+  const handleQuickSearchDue = (dueType: string) => {
+    setSearch(`due:${dueType}`);
+  };
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden px-2">
       <div className="flex items-center justify-between px-2">
         <h4>{board?.name}</h4>
         <div className="flex flex-1 items-center justify-end gap-1">
-          <button type="button" className="rounded-lg bg-primary p-2 text-xl">
+          <button
+            type="button"
+            onClick={handleQuickSearchToggle}
+            className="rounded-lg bg-primary p-2 text-xl"
+            disabled={isLoading}>
             <FaSearchengin />
           </button>
           <input
@@ -280,11 +299,37 @@ const BoardView = () => {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for tasks on this board..."
             className="md:w-2/3 lg:w-1/2"
+            disabled={isLoading}
           />
         </div>
       </div>
 
       {isLoading && <Loading />}
+      <div ref={quickSearchAnimations}>
+        {showQuickSearch && (
+          <div className="m-1 flex justify-center gap-1">
+            <button
+              type="button"
+              onClick={handleQuickSearchOverdue}
+              className="rounded bg-danger px-4 py-2">
+              Overdue
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickSearchDue("today")}
+              className="rounded bg-accent px-4 py-2">
+              Due Today
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickSearchDue("this week")}
+              className="rounded bg-accent2 px-4 py-2">
+              Due this week
+            </button>
+          </div>
+        )}
+      </div>
+
       {!isLoading && board && (
         <div className="flex flex-nowrap gap-4 overflow-x-auto p-4 pr-12">
           <DndContext

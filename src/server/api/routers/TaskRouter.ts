@@ -31,7 +31,7 @@ export const TaskRouter = createTRPCRouter({
         description: z.string().nullish(),
         position: z.number(),
         bucketId: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.prisma.task.create({
@@ -50,7 +50,7 @@ export const TaskRouter = createTRPCRouter({
     .input(
       z.object({
         taskId: z.string(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const result = await ctx.prisma.task.findUnique({
@@ -89,10 +89,10 @@ export const TaskRouter = createTRPCRouter({
       });
       const freshAttachmentIds = freshAttachments.map((a) => a.id);
       const currentAttachmentIds = input.attachments.map(
-        (a) => a.id
+        (a) => a.id,
       ) as string[];
       const attachmentDeletes = freshAttachmentIds.filter(
-        (a) => !currentAttachmentIds.includes(a)
+        (a) => !currentAttachmentIds.includes(a),
       );
       await ctx.prisma.attachment.deleteMany({
         where: {
@@ -102,7 +102,7 @@ export const TaskRouter = createTRPCRouter({
         },
       });
       const attachmentAdds = currentAttachmentIds.filter(
-        (a) => !freshAttachmentIds.includes(a)
+        (a) => !freshAttachmentIds.includes(a),
       );
       for (const attachmentId of attachmentAdds) {
         const attachment = input.attachments.find((a) => a.id === attachmentId);
@@ -159,7 +159,7 @@ export const TaskRouter = createTRPCRouter({
       const freshCommentIds = freshComments.map((c) => c.id);
       const currentCommentIds = input.comments.map((c) => c.id) as string[];
       const commentDeletes = freshCommentIds.filter(
-        (c) => !currentCommentIds.includes(c)
+        (c) => !currentCommentIds.includes(c),
       );
       await ctx.prisma.comment.deleteMany({
         where: {
@@ -169,7 +169,7 @@ export const TaskRouter = createTRPCRouter({
         },
       });
       const commentAdds = currentCommentIds.filter(
-        (c) => !freshCommentIds.includes(c)
+        (c) => !freshCommentIds.includes(c),
       );
       for (const commentAdd of commentAdds) {
         const comment = input.comments.find((c) => c.id === commentAdd);
@@ -236,7 +236,7 @@ export const TaskRouter = createTRPCRouter({
         console.warn(
           "adjusted to hardcoded timezone! America/New_York, should pull from user's location or preferences",
           input.startDate,
-          input.dueDate
+          input.dueDate,
         );
       }
 
@@ -280,7 +280,7 @@ export const TaskRouter = createTRPCRouter({
     .input(
       z.object({
         taskId: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const result = await ctx.prisma.task.delete({
@@ -292,9 +292,12 @@ export const TaskRouter = createTRPCRouter({
       return result;
     }),
   generateS3PresignedUrl: protectedProcedure.query(async ({ ctx }) => {
+    if (process.env.NODE_ENV !== "production") {
+      return;
+    }
     console.log(
       "Generating S3 presigned url for user: ",
-      ctx.session.user.email
+      ctx.session.user.email,
     );
 
     const bucketName = Bucket["inveniam-attachment-storage"].bucketName;
@@ -332,7 +335,7 @@ export const TaskRouter = createTRPCRouter({
       for (const user of users) {
         if (!user.email) {
           throw new Error(
-            "Unable to check if user has been invited due to user not having an email value"
+            "Unable to check if user has been invited due to user not having an email value",
           );
         }
         const invitation = await ctx.prisma.invitation.findFirst({
@@ -345,7 +348,7 @@ export const TaskRouter = createTRPCRouter({
           invitation.email !== "fillip1984@gmail.com"
         ) {
           console.warn(
-            "Invitation is either not enabled or email has not verified by aws ses so no report sent"
+            "Invitation is either not enabled or email has not verified by aws ses so no report sent",
           );
           continue;
         }
