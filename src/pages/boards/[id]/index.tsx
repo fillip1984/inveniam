@@ -273,10 +273,6 @@ const BoardView = () => {
     setShowQuickSearch((prev) => !prev);
   };
 
-  const handleQuickSearchNoDue = () => {
-    setSearch("overdue:none");
-  };
-
   const handleQuickSearchOverdue = () => {
     setSearch("overdue:true");
   };
@@ -314,7 +310,7 @@ const BoardView = () => {
           <div className="m-1 flex justify-center gap-1">
             <button
               type="button"
-              onClick={handleQuickSearchNoDue}
+              onClick={() => handleQuickSearchDue("none")}
               className="rounded border border-danger px-4 py-2">
               No due date
             </button>
