@@ -58,7 +58,12 @@ export const BoardRouter = createTRPCRouter({
       let dueStart: Date | null = null;
       let dueEnd: Date | null = null;
       let textContains = input.search ?? "";
-      if (input.search?.includes("due:today")) {
+      if (input.search?.includes("due:none")) {
+        textContains = textContains.replace("due:none", "").trim();
+        dueStart = null;
+        dueEnd = null;
+        // TODO: figure out how to write a simpler query, this is getting out of hand. I can't even add this in because the syntax is getting crazy
+      } else if (input.search?.includes("due:today")) {
         textContains = textContains.replace("due:today", "").trim();
         dueStart = startOfDay(utcToZonedTime(new Date(), userTimezone));
         dueEnd = endOfDay(dueStart);
