@@ -118,7 +118,7 @@ const BucketComponent = ({
           ? -1
           : 1;
       })
-      .map((task) => {
+      .forEach((task) => {
         const taskToUpdate = {
           id: task.id,
           position: task.position,
