@@ -118,10 +118,10 @@ const BucketComponent = ({
           ? -1
           : 1;
       })
-      .forEach((task) => {
+      .forEach((task, index) => {
         const taskToUpdate = {
           id: task.id,
-          position: task.position,
+          position: index,
           bucketId: bucket.id,
         };
         tasksToUpdate.push(taskToUpdate);
