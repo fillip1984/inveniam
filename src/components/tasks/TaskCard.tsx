@@ -45,13 +45,18 @@ const TaskCard = ({
   };
 
   return (
-    <div ref={setNodeRef} {...attributes} {...listeners} style={style}>
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      style={style}
+      className="touch-manipulation">
       <div
         onClick={() =>
           handleTaskSelected ? handleTaskSelected(task.id) : null
         }
         className={clsx(
-          "cursor-pointer touch-manipulation rounded border border-white bg-primary text-white",
+          "cursor-pointer select-none rounded border border-white bg-primary text-white",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-3 scale-105": isOverlay,

@@ -139,10 +139,10 @@ const BucketComponent = ({
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="touch-manipulation">
       <div
         className={clsx(
-          "relative flex max-h-[85dvh] w-[85dvw] touch-manipulation flex-col overflow-hidden rounded-lg border bg-primary sm:w-[400px]",
+          "relative flex max-h-[85dvh] w-[85dvw] select-none flex-col overflow-hidden rounded-lg border bg-primary sm:w-[400px]",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-1 scale-105": isOverlay,
