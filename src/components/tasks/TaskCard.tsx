@@ -51,11 +51,11 @@ const TaskCard = ({
           handleTaskSelected ? handleTaskSelected(task.id) : null
         }
         className={clsx(
-          "cursor-pointer select-none rounded border border-white bg-primary text-white",
+          "cursor-pointer touch-manipulation rounded border border-white bg-primary text-white",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-3 scale-105": isOverlay,
-          }
+          },
         )}>
         <div className="px-1">
           <Tags task={task} />
@@ -144,7 +144,7 @@ const DueDateBadge = ({ task }: { task: TaskAndEverything }) => {
               "bg-danger":
                 !task.complete &&
                 isAfter(startOfDay(new Date()), startOfDay(task.dueDate)),
-            }
+            },
           )}>
           <FaCalendarDay />
           {format(task.dueDate, yyyyMMddHyphenated)}
