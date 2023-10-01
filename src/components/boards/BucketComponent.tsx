@@ -77,7 +77,7 @@ const BucketComponent = ({
     {
       // TODO: not sure if we should be using this here...
       // onSuccess: () => utils.boards.invalidate(),
-    }
+    },
   );
 
   const handleSortByDueDate = () => {
@@ -113,7 +113,7 @@ const BucketComponent = ({
         // both have due date but are not equal
         return isBefore(
           task1.dueDate ?? new Date(0),
-          task2.dueDate ?? new Date(0)
+          task2.dueDate ?? new Date(0),
         )
           ? -1
           : 1;
@@ -142,11 +142,11 @@ const BucketComponent = ({
     <div ref={setNodeRef} style={style}>
       <div
         className={clsx(
-          "relative flex max-h-[85dvh] w-[85dvw] select-none flex-col overflow-hidden rounded-lg border bg-primary sm:w-[400px]",
+          "relative flex max-h-[85dvh] w-[85dvw] touch-manipulation flex-col overflow-hidden rounded-lg border bg-primary sm:w-[400px]",
           {
             "opacity-30": !isOverlay && isDragging,
             "z-50 rotate-1 scale-105": isOverlay,
-          }
+          },
         )}>
         <div
           {...attributes}
