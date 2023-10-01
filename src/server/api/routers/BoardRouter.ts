@@ -55,14 +55,17 @@ export const BoardRouter = createTRPCRouter({
   readOne: protectedProcedure
     .input(z.object({ id: z.string().cuid(), search: z.string().nullish() }))
     .query(async ({ ctx, input }) => {
+      let tagSearch = false;
       let dueStart: Date | null = null;
       let dueEnd: Date | null = null;
+      let noDue = false;
       let textContains = input.search ?? "";
-      if (input.search?.includes("due:none")) {
+      if (input.search?.includes("tag:")) {
+        tagSearch = true;
+        // textContains = textContains.replace()
+      } else if (input.search?.includes("due:none")) {
         textContains = textContains.replace("due:none", "").trim();
-        dueStart = null;
-        dueEnd = null;
-        // TODO: figure out how to write a simpler query, this is getting out of hand. I can't even add this in because the syntax is getting crazy
+        noDue = true;
       } else if (input.search?.includes("due:today")) {
         textContains = textContains.replace("due:today", "").trim();
         dueStart = startOfDay(utcToZonedTime(new Date(), userTimezone));
@@ -93,8 +96,30 @@ export const BoardRouter = createTRPCRouter({
               tasks: {
                 // See: https://stackoverflow.com/questions/72197774/how-to-call-where-clause-conditionally-prisma
                 where: {
-                  ...(dueStart && dueEnd
+                  // find tasks with no due date
+                  ...(noDue
                     ? {
+                        dueDate: {
+                          equals: null,
+                        },
+                        OR: [
+                          {
+                            text: {
+                              contains: textContains,
+                              mode: "insensitive",
+                            },
+                          },
+                          {
+                            description: {
+                              contains: textContains,
+                              mode: "insensitive",
+                            },
+                          },
+                        ],
+                      }
+                    : dueStart && dueEnd
+                    ? // find tasks with specific date ranges
+                      {
                         dueDate: {
                           gte: dueStart,
                           lte: dueEnd,
@@ -115,6 +140,7 @@ export const BoardRouter = createTRPCRouter({
                         ],
                       }
                     : {
+                        // search by text/description
                         OR: [
                           {
                             text: {
