@@ -98,6 +98,8 @@ const BoardView = () => {
     // allows for buttons to be pressed and not activate dnd (clicking on cards to open modal or clicking the ellipsis to access context menus on lists are examples of why this is necessary)
     activationConstraint: {
       distance: 10,
+      delay: 300,
+      tolerance: 8,
     },
   });
 
