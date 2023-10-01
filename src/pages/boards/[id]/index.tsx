@@ -16,6 +16,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaSearchengin } from "react-icons/fa";
+import { FaTag } from "react-icons/fa6";
 import { useDebounce } from "usehooks-ts";
 import BucketComponent from "~/components/boards/BucketComponent";
 import NewBucket from "~/components/boards/NewBucket";
@@ -269,6 +270,8 @@ const BoardView = () => {
     }
   }, [showTaskModal]);
 
+  // quick search stuff
+  const { data: tags } = api.tags.readAll.useQuery();
   const [quickSearchAnimations] = useAutoAnimate();
   const [showQuickSearch, setShowQuickSearch] = useState(false);
   const handleQuickSearchToggle = () => {
@@ -281,6 +284,10 @@ const BoardView = () => {
 
   const handleQuickSearchDue = (dueType: string) => {
     setSearch(`due:${dueType}`);
+  };
+
+  const handleQuickSearchTag = (tagName: string) => {
+    setSearch(`tag:"${tagName}"`);
   };
 
   return (
@@ -309,31 +316,44 @@ const BoardView = () => {
       {isLoading && <Loading />}
       <div ref={quickSearchAnimations}>
         {showQuickSearch && (
-          <div className="m-1 flex justify-center gap-1">
-            <button
-              type="button"
-              onClick={() => handleQuickSearchDue("none")}
-              className="rounded border border-danger px-4 py-2">
-              No due date
-            </button>
-            <button
-              type="button"
-              onClick={handleQuickSearchOverdue}
-              className="rounded bg-danger px-4 py-2">
-              Overdue
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickSearchDue("today")}
-              className="rounded bg-accent px-4 py-2">
-              Due Today
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickSearchDue("this week")}
-              className="rounded bg-accent2 px-4 py-2">
-              Due this week
-            </button>
+          <div>
+            <div className="m-1 flex justify-center gap-1">
+              <button
+                type="button"
+                onClick={() => handleQuickSearchDue("none")}
+                className="rounded border border-danger px-4 py-2">
+                No due date
+              </button>
+              <button
+                type="button"
+                onClick={handleQuickSearchOverdue}
+                className="rounded bg-danger px-4 py-2">
+                Overdue
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSearchDue("today")}
+                className="rounded bg-accent px-4 py-2">
+                Due Today
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSearchDue("this week")}
+                className="rounded bg-accent2 px-4 py-2">
+                Due this week
+              </button>
+            </div>
+            <div className="m-1 flex justify-center gap-1">
+              <FaTag className="text-4xl" />
+              {tags?.map((tag) => (
+                <button
+                  key={tag.id}
+                  onClick={() => handleQuickSearchTag(tag.name)}
+                  className="rounded bg-accent2 p-1 text-sm">
+                  {tag.name}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>

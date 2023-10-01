@@ -55,14 +55,19 @@ export const BoardRouter = createTRPCRouter({
   readOne: protectedProcedure
     .input(z.object({ id: z.string().cuid(), search: z.string().nullish() }))
     .query(async ({ ctx, input }) => {
-      let tagSearch = false;
+      let tagSearch = undefined;
       let dueStart: Date | null = null;
       let dueEnd: Date | null = null;
       let noDue = false;
       let textContains = input.search ?? "";
-      if (input.search?.includes("tag:")) {
-        tagSearch = true;
-        // textContains = textContains.replace()
+      if (input.search?.includes('tag:"')) {
+        textContains = input.search.replace("tag:", "").trim();
+        // const tagName = /"([^"]*)"/.exec(textContains);
+        const tagName = textContains.match(/"([^"]*)"/);
+        if (tagName && tagName[1]) {
+          tagSearch = tagName[1];
+          textContains = textContains.replace(tagSearch, "").trim();
+        }
       } else if (input.search?.includes("due:none")) {
         textContains = textContains.replace("due:none", "").trim();
         noDue = true;
@@ -83,7 +88,7 @@ export const BoardRouter = createTRPCRouter({
         );
       }
 
-      console.dir({ dueStart, dueEnd, textContains });
+      console.dir({ dueStart, dueEnd, textContains, tagSearch });
 
       const board = await ctx.prisma.board.findUnique({
         where: { id: input.id, userId: ctx.session.user.id },
@@ -97,7 +102,17 @@ export const BoardRouter = createTRPCRouter({
                 // See: https://stackoverflow.com/questions/72197774/how-to-call-where-clause-conditionally-prisma
                 where: {
                   // find tasks with no due date
-                  ...(noDue
+                  ...(tagSearch
+                    ? {
+                        tags: {
+                          some: {
+                            tag: {
+                              name: tagSearch,
+                            },
+                          },
+                        },
+                      }
+                    : noDue
                     ? {
                         dueDate: {
                           equals: null,
