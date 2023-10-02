@@ -278,16 +278,34 @@ const BoardView = () => {
     setShowQuickSearch((prev) => !prev);
   };
 
-  const handleQuickSearchOverdue = () => {
-    setSearch("overdue:true");
-  };
-
   const handleQuickSearchDue = (dueType: string) => {
-    setSearch(`due:${dueType}`);
+    //remove all other date related searches
+    const dateSearches = [
+      'due:"none"',
+      'due:"past"',
+      'due:"today"',
+      'due:"this week"',
+    ];
+
+    let newSearch = search;
+    dateSearches.forEach(
+      (dateSearch) => (newSearch = newSearch.replace(dateSearch, "")),
+    );
+    newSearch = newSearch.trim() + ` due:"${dueType}" `;
+    setSearch(newSearch.trim());
   };
 
   const handleQuickSearchTag = (tagName: string) => {
-    setSearch(`tag:"${tagName}"`);
+    //remove all other tags
+    const tagNames = search.match(/(tag:"[^"]*" ?)/g);
+    let newSearch = search;
+    if (tagNames) {
+      tagNames.forEach(
+        (tagNameFound) => (newSearch = newSearch.replace(tagNameFound, "")),
+      );
+    }
+    newSearch = newSearch.trim() + ` tag:"${tagName}" `;
+    setSearch(newSearch.trim());
   };
 
   return (
@@ -326,7 +344,7 @@ const BoardView = () => {
               </button>
               <button
                 type="button"
-                onClick={handleQuickSearchOverdue}
+                onClick={() => handleQuickSearchDue("past")}
                 className="rounded bg-danger px-4 py-2">
                 Overdue
               </button>

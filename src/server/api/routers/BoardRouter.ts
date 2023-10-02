@@ -55,40 +55,57 @@ export const BoardRouter = createTRPCRouter({
   readOne: protectedProcedure
     .input(z.object({ id: z.string().cuid(), search: z.string().nullish() }))
     .query(async ({ ctx, input }) => {
-      let tagSearch = undefined;
+      let searchText = input.search ?? "";
+      let noDue = false;
       let dueStart: Date | null = null;
       let dueEnd: Date | null = null;
-      let noDue = false;
-      let textContains = input.search ?? "";
-      if (input.search?.includes('tag:"')) {
-        textContains = input.search.replace("tag:", "").trim();
-        // const tagName = /"([^"]*)"/.exec(textContains);
-        const tagName = textContains.match(/"([^"]*)"/);
-        if (tagName && tagName[1]) {
-          tagSearch = tagName[1];
-          textContains = textContains.replace(tagSearch, "").trim();
-        }
-      } else if (input.search?.includes("due:none")) {
-        textContains = textContains.replace("due:none", "").trim();
+      let tagSearch = undefined;
+
+      if (input.search?.includes('due:"none"')) {
+        searchText = searchText.replace('due:"none"', "").trim();
         noDue = true;
-      } else if (input.search?.includes("due:today")) {
-        textContains = textContains.replace("due:today", "").trim();
+      } else if (input.search?.includes('due:"today"')) {
+        searchText = searchText.replace('due:"today"', "").trim();
         dueStart = startOfDay(utcToZonedTime(new Date(), userTimezone));
         dueEnd = endOfDay(dueStart);
-      } else if (input.search?.includes("due:this week")) {
-        textContains = textContains.replace("due:this week", "").trim();
+      } else if (input.search?.includes('due:"this week"')) {
+        searchText = searchText.replace('due:"this week"', "").trim();
         dueStart = startOfWeek(utcToZonedTime(new Date(), userTimezone));
         dueEnd = endOfWeek(dueStart);
-      } else if (input.search?.includes("overdue:true")) {
-        textContains = textContains.replace("overdue:true", "").trim();
+      } else if (input.search?.includes('due:"past"')) {
+        searchText = searchText.replace('due:"past"', "").trim();
         dueStart = new Date(0);
         dueEnd = addDays(
           endOfDay(utcToZonedTime(new Date(), userTimezone)),
           -1,
         );
       }
+      console.dir({
+        point: "prior to tag mods",
+        dueStart,
+        dueEnd,
+        noDue,
+        searchText,
+        tagSearch,
+      });
+      if (searchText.includes('tag:"')) {
+        searchText = searchText.replace("tag:", "").trim();
+        // const tagName = /"([^"]*)"/.exec(searchText);
+        const tagName = searchText.match(/"([^"]*)"/);
+        if (tagName && tagName[0] && tagName[1]) {
+          tagSearch = tagName[1];
+          searchText = searchText.replace(tagName[0], "").trim();
+        }
+      }
 
-      console.dir({ dueStart, dueEnd, textContains, tagSearch });
+      console.dir({
+        point: "post tag mods",
+        dueStart,
+        dueEnd,
+        noDue,
+        searchText,
+        tagSearch,
+      });
 
       const board = await ctx.prisma.board.findUnique({
         where: { id: input.id, userId: ctx.session.user.id },
@@ -101,76 +118,50 @@ export const BoardRouter = createTRPCRouter({
               tasks: {
                 // See: https://stackoverflow.com/questions/72197774/how-to-call-where-clause-conditionally-prisma
                 where: {
-                  // find tasks with no due date
-                  ...(tagSearch
-                    ? {
-                        tags: {
-                          some: {
-                            tag: {
-                              name: tagSearch,
+                  OR: [
+                    {
+                      text: {
+                        contains: searchText,
+                        mode: "insensitive",
+                      },
+                    },
+                    {
+                      description: {
+                        contains: searchText,
+                        mode: "insensitive",
+                      },
+                    },
+                  ],
+                  AND: [
+                    {
+                      ...(tagSearch
+                        ? {
+                            tags: {
+                              some: {
+                                tag: {
+                                  name: tagSearch,
+                                },
+                              },
                             },
-                          },
-                        },
-                      }
-                    : noDue
-                    ? {
-                        dueDate: {
-                          equals: null,
-                        },
-                        OR: [
-                          {
-                            text: {
-                              contains: textContains,
-                              mode: "insensitive",
+                          }
+                        : undefined),
+                      ...(noDue
+                        ? {
+                            dueDate: {
+                              equals: null,
                             },
-                          },
-                          {
-                            description: {
-                              contains: textContains,
-                              mode: "insensitive",
+                          }
+                        : undefined),
+                      ...(dueStart && dueEnd
+                        ? {
+                            dueDate: {
+                              gte: dueStart,
+                              lte: dueEnd,
                             },
-                          },
-                        ],
-                      }
-                    : dueStart && dueEnd
-                    ? // find tasks with specific date ranges
-                      {
-                        dueDate: {
-                          gte: dueStart,
-                          lte: dueEnd,
-                        },
-                        OR: [
-                          {
-                            text: {
-                              contains: textContains,
-                              mode: "insensitive",
-                            },
-                          },
-                          {
-                            description: {
-                              contains: textContains,
-                              mode: "insensitive",
-                            },
-                          },
-                        ],
-                      }
-                    : {
-                        // search by text/description
-                        OR: [
-                          {
-                            text: {
-                              contains: textContains,
-                              mode: "insensitive",
-                            },
-                          },
-                          {
-                            description: {
-                              contains: textContains,
-                              mode: "insensitive",
-                            },
-                          },
-                        ],
-                      }),
+                          }
+                        : {}),
+                    },
+                  ],
                 },
                 orderBy: {
                   position: "asc",

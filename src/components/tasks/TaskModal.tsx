@@ -49,7 +49,7 @@ const TaskModal = ({
     { taskId },
     {
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   // const { data: buckets } = api.boards.readAllBuckets.useQuery({ boardId });
@@ -98,11 +98,6 @@ const TaskModal = ({
 
   const isComplete = useWatch({ control, name: "complete" });
 
-  const textWatch = useWatch({ control, name: "text" });
-  useEffect(() => {
-    console.log("text", textWatch);
-  }, [textWatch]);
-
   useEffect(() => {
     if (task) {
       reset({
@@ -147,10 +142,6 @@ const TaskModal = ({
       deleteTask({ taskId: task.id });
     }
   };
-
-  useEffect(() => {
-    console.log("errors", errors);
-  }, [errors]);
 
   return (
     <div
@@ -206,7 +197,8 @@ const TaskModal = ({
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onSubmit={handleSubmit(onSubmit)}
             id="taskForm"
-            className="h-full overflow-y-auto p-2 pb-44">
+            className="h-full overflow-y-auto p-2 pb-44"
+            noValidate>
             <input type="hidden" {...register("id")} />
             <input type="hidden" {...register("bucketId")} />
 
