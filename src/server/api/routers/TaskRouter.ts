@@ -241,7 +241,7 @@ export const TaskRouter = createTRPCRouter({
       }
 
       let bucketId = input.bucketId;
-      console.log({ bucketId });
+
       if (input.complete) {
         const completeBucket = await ctx.prisma.bucket.findFirst({
           where: {
@@ -261,7 +261,6 @@ export const TaskRouter = createTRPCRouter({
           bucketId = completeBucket.id;
         }
       }
-      console.log({ bucketId });
 
       const result = ctx.prisma.task.update({
         where: {
