@@ -278,7 +278,7 @@ const BoardView = () => {
     setShowQuickSearch((prev) => !prev);
   };
 
-  const handleQuickSearchDue = (dueType: string) => {
+  const handleQuickSearchDue = (dueType: string | null) => {
     //remove all other date related searches
     const dateSearches = [
       'due:"none"',
@@ -291,11 +291,11 @@ const BoardView = () => {
     dateSearches.forEach(
       (dateSearch) => (newSearch = newSearch.replace(dateSearch, "")),
     );
-    newSearch = newSearch.trim() + ` due:"${dueType}" `;
+    newSearch = newSearch.trim() + (dueType ? ` due:"${dueType}" ` : "");
     setSearch(newSearch.trim());
   };
 
-  const handleQuickSearchTag = (tagName: string) => {
+  const handleQuickSearchTag = (tagName: string | null) => {
     //remove all other tags
     const tagNames = search.match(/(tag:"[^"]*" ?)/g);
     let newSearch = search;
@@ -304,7 +304,7 @@ const BoardView = () => {
         (tagNameFound) => (newSearch = newSearch.replace(tagNameFound, "")),
       );
     }
-    newSearch = newSearch.trim() + ` tag:"${tagName}" `;
+    newSearch = newSearch.trim() + (tagName ? ` tag:"${tagName}" ` : "");
     setSearch(newSearch.trim());
   };
 
@@ -360,6 +360,12 @@ const BoardView = () => {
                 className="rounded bg-accent2 px-4 py-2">
                 Due this week
               </button>
+              <button
+                type="button"
+                onClick={() => handleQuickSearchDue(null)}
+                className="rounded border border-accent2 px-4 py-2 text-sm">
+                Clear due filters
+              </button>
             </div>
             <div className="m-1 flex justify-center gap-1">
               <FaTag className="text-4xl" />
@@ -371,6 +377,12 @@ const BoardView = () => {
                   {tag.name}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => handleQuickSearchTag(null)}
+                className="rounded border border-accent2 px-4 py-2 text-sm">
+                Clear tag filters
+              </button>
             </div>
           </div>
         )}
