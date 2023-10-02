@@ -64,14 +64,13 @@ const AttachmentListView = ({
   const { data: presignedS3Url } = api.tasks.generateS3PresignedUrl.useQuery();
 
   const uploadAttachment = async () => {
-    console.log("uploading attachment");
     if (!file) {
       throw new Error("Unable to upload photo, file is undefined");
     }
 
     if (!presignedS3Url) {
       throw new Error(
-        "Unable to upload attachment, unable to get presignedS3Url"
+        "Unable to upload attachment, unable to get presignedS3Url",
       );
     }
     const image = await fetch(presignedS3Url.url, {

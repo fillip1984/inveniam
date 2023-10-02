@@ -81,7 +81,6 @@ const BucketComponent = ({
   );
 
   const handleSortByDueDate = () => {
-    console.log("sorting by due");
     const tasksToUpdate: TaskPositionUpdateType[] = [];
 
     bucket.tasks

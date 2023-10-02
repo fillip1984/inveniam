@@ -26,7 +26,7 @@ const ExportSection = () => {
       let url = null;
       if (isPrettyPrint) {
         url = window.URL.createObjectURL(
-          new Blob([JSON.stringify(data, null, 2)])
+          new Blob([JSON.stringify(data, null, 2)]),
         );
       } else {
         url = window.URL.createObjectURL(new Blob([JSON.stringify(data)]));
@@ -36,7 +36,7 @@ const ExportSection = () => {
       link.href = url;
       link.setAttribute(
         "download",
-        `${format(new Date(), "yyyy-MM-dd'T'HH_mm_ss")} inveniam_export.json`
+        `${format(new Date(), "yyyy-MM-dd'T'HH_mm_ss")} inveniam_export.json`,
       );
       document.body.appendChild(link);
       link.click();
@@ -45,7 +45,6 @@ const ExportSection = () => {
   });
 
   const handleExport = () => {
-    console.log("exporting");
     exportData();
   };
 
@@ -79,7 +78,6 @@ const ImportSection = () => {
   const { mutate: importData } = api.admin.import.useMutation();
 
   const handleImport = () => {
-    console.log("importing");
     if (!importFile) {
       throw new Error("unable to import file");
     }

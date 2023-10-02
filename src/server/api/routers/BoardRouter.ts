@@ -80,14 +80,7 @@ export const BoardRouter = createTRPCRouter({
           -1,
         );
       }
-      console.dir({
-        point: "prior to tag mods",
-        dueStart,
-        dueEnd,
-        noDue,
-        searchText,
-        tagSearch,
-      });
+
       if (searchText.includes('tag:"')) {
         searchText = searchText.replace("tag:", "").trim();
         // const tagName = /"([^"]*)"/.exec(searchText);
@@ -97,15 +90,6 @@ export const BoardRouter = createTRPCRouter({
           searchText = searchText.replace(tagName[0], "").trim();
         }
       }
-
-      console.dir({
-        point: "post tag mods",
-        dueStart,
-        dueEnd,
-        noDue,
-        searchText,
-        tagSearch,
-      });
 
       const board = await ctx.prisma.board.findUnique({
         where: { id: input.id, userId: ctx.session.user.id },
