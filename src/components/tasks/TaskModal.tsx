@@ -40,10 +40,12 @@ const TaskModal = ({
   isOpen,
   close,
   taskId,
+  boardId,
 }: {
   isOpen: boolean;
   close: () => void;
   taskId: string;
+  boardId: string;
 }) => {
   const { data: task } = api.tasks.readOne.useQuery(
     { taskId },
@@ -102,6 +104,7 @@ const TaskModal = ({
     if (task) {
       reset({
         id: task.id,
+        boardId,
         bucketId: task.bucket.id,
         text: task.text,
         description: task.description,

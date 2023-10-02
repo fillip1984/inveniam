@@ -94,6 +94,7 @@ export type BucketPositionUpdateType = z.infer<typeof bucketPositionUpdate>;
 export const taskFormSchema = z
   .object({
     id: z.string(),
+    boardId: z.string(),
     bucketId: z.string(),
     text: z.string().min(1, { message: "Task text is required" }),
     description: z.string().nullish(),
@@ -107,14 +108,14 @@ export const taskFormSchema = z
         id: z.string().nullish(),
         text: z.string().min(1),
         posted: z.date(),
-      })
+      }),
     ),
     checklistItems: z.array(
       z.object({
         id: z.string().nullish(),
         text: z.string().min(1),
         complete: z.boolean(),
-      })
+      }),
     ),
     taskTag: z.array(
       z.object({
@@ -124,7 +125,7 @@ export const taskFormSchema = z
           id: z.string().nullish(),
           name: z.string(),
         }),
-      })
+      }),
     ),
     attachments: z.array(
       z.object({
@@ -133,7 +134,7 @@ export const taskFormSchema = z
         added: z.date(),
         imageData_Base64Encoded: z.string().nullish(),
         link: s3StoredObject,
-      })
+      }),
     ),
   })
   .refine(
@@ -145,7 +146,7 @@ export const taskFormSchema = z
         startDate = parse(
           data.startDate as string,
           yyyyMMddHyphenated,
-          new Date()
+          new Date(),
         );
       }
 
@@ -167,7 +168,7 @@ export const taskFormSchema = z
     {
       message: "Due date must be after Start date",
       path: ["dueDate"],
-    }
+    },
   );
 
 export type TaskFormSchemaType = z.infer<typeof taskFormSchema>;

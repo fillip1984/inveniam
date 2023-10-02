@@ -240,6 +240,29 @@ export const TaskRouter = createTRPCRouter({
         );
       }
 
+      let bucketId = input.bucketId;
+      console.log({ bucketId });
+      if (input.complete) {
+        const completeBucket = await ctx.prisma.bucket.findFirst({
+          where: {
+            boardId: input.boardId,
+            userId: ctx.session.user.id,
+            name: {
+              equals: "Complete",
+              mode: "insensitive",
+            },
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        if (completeBucket) {
+          bucketId = completeBucket.id;
+        }
+      }
+      console.log({ bucketId });
+
       const result = ctx.prisma.task.update({
         where: {
           id: input.id,
@@ -248,6 +271,7 @@ export const TaskRouter = createTRPCRouter({
           text: input.text,
           description: input.description,
           complete: input.complete,
+          bucketId,
           // status: input.status,
           priority: input.priority,
           startDate: input.startDate,
