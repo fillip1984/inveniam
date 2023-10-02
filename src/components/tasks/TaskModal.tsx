@@ -119,7 +119,7 @@ const TaskModal = ({
         attachments: task.attachments,
       });
     }
-  }, [reset, task]);
+  }, [reset, task, boardId]);
 
   const utils = api.useContext();
   const { mutate: updateTask } = api.tasks.update.useMutation({
