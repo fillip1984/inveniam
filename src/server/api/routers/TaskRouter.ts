@@ -247,11 +247,13 @@ export const TaskRouter = createTRPCRouter({
           where: {
             boardId: input.boardId,
             userId: ctx.session.user.id,
-            name: {
+OR: [{name: {
               equals: "Complete",
               mode: "insensitive",
-            },
-          },
+            }, name: {
+equals: "Done",
+mode: "insensitive"
+          }}],
           select: {
             id: true,
           },
