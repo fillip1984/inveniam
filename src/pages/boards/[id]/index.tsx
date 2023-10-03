@@ -90,7 +90,7 @@ const BoardView = () => {
   const mouseSensor = useSensor(MouseSensor, {
     // allows for buttons to be pressed and not activate dnd (clicking on cards to open modal or clicking the ellipsis to access context menus on lists are examples of why this is necessary)
     activationConstraint: {
-      delay: 100,
+      delay: 300,
       tolerance: 8,
     },
   });
