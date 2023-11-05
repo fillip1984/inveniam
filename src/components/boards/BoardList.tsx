@@ -12,9 +12,9 @@ const BoardList = () => {
   } = api.boards.readAll.useQuery();
 
   return (
-    <div>
+    <div className="w-full">
       {(isLoading || isError) && (
-        <div className="flex justify-center pt-12">
+        <div className="flex w-full justify-center pt-12">
           <LoadingErrorAndRetry
             isLoading={isLoading}
             isError={isError}
@@ -24,14 +24,12 @@ const BoardList = () => {
       )}
 
       {!isLoading && !isError && boards && (
-        <div className="flex flex-wrap gap-2 p-4">
-          {boards?.map((board) => (
-            <BoardCard key={board.id} board={board} />
-          ))}
-          <Link href="/boards/new/details">
-            <div className="flex h-[250px] w-[350px] items-center justify-center rounded-lg border border-primary p-2 text-primary transition duration-300 ease-in-out hover:border-primary/80 hover:text-primary/80">
-              <h3>New Board</h3>
-            </div>
+        <div className="flex h-full w-full flex-wrap justify-center gap-2 p-4">
+          {boards?.map((board) => <BoardCard key={board.id} board={board} />)}
+          <Link
+            href="/boards/new/details"
+            className="flex h-1/2 w-full items-center justify-center rounded-lg border border-primary p-2 text-primary transition duration-300 ease-in-out hover:border-primary/80 hover:text-primary/80 sm:h-[250px] sm:w-[350px]">
+            <h3>New Board</h3>
           </Link>
         </div>
       )}

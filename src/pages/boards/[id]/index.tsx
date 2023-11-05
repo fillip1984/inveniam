@@ -310,7 +310,7 @@ const BoardView = () => {
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden px-2">
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between gap-4 px-2">
         <h4>{board?.name}</h4>
         <div className="flex flex-1 items-center justify-end gap-1">
           <button
@@ -325,7 +325,7 @@ const BoardView = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search for tasks on this board..."
-            className="md:w-2/3 lg:w-1/2"
+            className="w-1/2 md:w-2/3 lg:w-3/4"
             disabled={isLoading}
           />
         </div>

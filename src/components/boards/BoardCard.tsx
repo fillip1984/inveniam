@@ -30,7 +30,7 @@ const BoardCard = ({ board }: { board: BoardSummary }) => {
   return (
     <Link
       href={`/boards/${board.id}`}
-      className="flex h-[250px] w-[350px] flex-col rounded-lg bg-primary p-2 transition duration-300 ease-in-out hover:bg-primary/90">
+      className="flex h-1/2 w-full flex-col rounded-lg bg-primary p-2 transition duration-300 ease-in-out hover:bg-primary/90 sm:h-[250px] sm:w-[350px]">
       <div className="flex-1">
         <h3>{board.name}</h3>
         <p>{board.description}</p>

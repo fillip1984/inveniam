@@ -172,7 +172,7 @@ const BucketComponent = ({
             />
           </div>
           <NewTask bucket={bucket} />
-          <div className="mb-4 flex flex-1 flex-col gap-2 overflow-y-auto px-4">
+          <div className="mb-4 flex flex-1 flex-col gap-2 overflow-y-auto px-4 pb-12 pt-2">
             <SortableContext
               items={bucket.tasks}
               // TODO: not sure what strategy does... keeping for now
