@@ -76,13 +76,13 @@ export default {
       });
 
       // Schedules a lambda cron job to run everyday at 11:30AM (7:30AM Eastern)
-      // I put the runtime as nodejs18 otherwise fetch wasn't available (should probably learn SQS or SES to trigger events instead of REST call to nextjs server)
+      // Should probably learn SQS or SES to trigger events instead of REST call to nextjs server)
       //See: https://docs.sst.dev/constructs/Function
       new Cron(stack, "status-report-email-cron", {
         schedule: "cron(30 11 * * ? *)",
         job: {
           function: {
-            runtime: "nodejs18.x",
+            runtime: "nodejs20.x",
             handler: "functions/emailStatusReport.handler",
           },
         },
