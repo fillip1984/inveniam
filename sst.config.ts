@@ -82,7 +82,7 @@ export default {
         schedule: "cron(30 11 * * ? *)",
         job: {
           function: {
-            runtime: "nodejs20.x",
+            runtime: "nodejs18.x",
             handler: "functions/emailStatusReport.handler",
           },
         },
