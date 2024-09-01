@@ -1,4 +1,4 @@
-// import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { BsFillSendFill } from "react-icons/bs";
 import { api } from "~/utils/api";
 
@@ -13,15 +13,17 @@ export default function StatusReport() {
   });
 
   const handleSendEmail = () => {
-    // toast
-    //   .promise(refetch(), {
-    //     loading: "Generating report",
-    //     success: "Status reported emailed",
-    //     error: "Something went wrong",
-    //   })
-    //   .catch(() =>
-    //     console.error("An error occurred while attempting to send status email")
-    //   );
+    toast
+      .promise(refetch(), {
+        loading: "Generating report",
+        success: "Status reported emailed",
+        error: "Something went wrong",
+      })
+      .catch(() =>
+        console.error(
+          "An error occurred while attempting to send status email",
+        ),
+      );
   };
 
   return (
